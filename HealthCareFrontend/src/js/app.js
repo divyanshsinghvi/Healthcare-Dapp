@@ -55,31 +55,18 @@ App = {
       }).then(function(isReg){
           if(isReg === true){
               console.log("I am registered shit") 
-              //              return 0;
-              return managerInstance.numPersons;
-          }
-          else{
+          }else{
               managerInstance.registerPerson(false)
-              return managerInstance.numPersons;
           }
-      }).then(function(personCount){
-        var personRegistered = $("#personRegistered");
-          personRegistered.empty();
-          for(var i = 1; i <= numPersons; i++){
-            managerInstance.person(i).then(function(person){
-                var id = person[0];
-                     // Render candidate Result
-          var candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + voteCount + "</td></tr>"
-          candidatesResults.append(candidateTemplate);  
-            })
-          }
-		loader.hide()
-		content.show()
-    }).catch(function(error){
+      }).watch(function(error,event){
+          console.log("event triggered", event)
+      }).catch(function(error){
 	console.warn(error)
 	})
   }
 };
+
+
 
 $(function() {
   $(window).load(function() {

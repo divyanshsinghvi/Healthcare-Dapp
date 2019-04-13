@@ -33,6 +33,7 @@ contract AppInterface {
   }
 
   function isPersonRegistered () public view returns(bool) {
+    emit personRegistered(address(person[numPersons]), numPersons);
     return isRegistered[msg.sender];
   }
   
