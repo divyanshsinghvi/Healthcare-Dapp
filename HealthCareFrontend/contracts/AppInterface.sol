@@ -38,10 +38,10 @@ contract AppInterface {
     return isRegistered[msg.sender];
   }
 
-  function getLatestReport () public view returns(string memory, string memory, string memory) {
-    /* Person personContract = person[personToUID[msg.sender]]; */
-    return person[personToUID[msg.sender]].getLatestReport();
-  }
+  /* function getLatestReport () public view returns(string memory, string memory, string memory) { */
+  /*   /\* Person personContract = person[personToUID[msg.sender]]; *\/ */
+  /*   return person[personToUID[msg.sender]].getLatestReport(); */
+  /* } */
 
   // TODO: Have to implement the below mentioned function somehow
   /* function getAllReports () public view returns(string[] memory, string[] memory, string[] memory) { */
@@ -62,8 +62,8 @@ contract AppInterface {
   /*   return (vitals, prescriptions, symptoms); */
   /* } */
 
-  function updateReportWithUID(uint reportID, string memory vitals, string memory prescriptions, string memory symptoms) public {
-    person[personToUID[msg.sender]].updateReportWithUID(reportID, vitals, prescriptions, symptoms);
-  }
+  /* function updateReportWithUID(uint reportID, string memory vitals, string memory prescriptions, string memory symptoms) public { */
+  /*   person[personToUID[msg.sender]].updateReportWithUID(reportID, vitals, prescriptions, symptoms); */
+  /* } */
 
 }

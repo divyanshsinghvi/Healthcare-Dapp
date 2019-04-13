@@ -1,22 +1,26 @@
 pragma solidity >=0.5.0 <0.6.0;
 
+import "./HealthReport.sol";
+
 contract Person {
 
   address myAddr;
   uint myUID;
   string name;
 
-  struct Report {
-    // Mrinaal: For simplicity, keeping everything as string for now
-    /* mapping (uint => string) vitals; */
-    /* mapping (uint => string) prescriptions; */
-    /* uint numVitals; */
-    /* uint numPrescriptions; */
-    string vitals;
-    string prescriptions;
+  HealthReport myHealthReport;
 
-    string symptoms;
-  }
+  /* struct Report { */
+  /*   // Mrinaal: For simplicity, keeping everything as string for now */
+  /*   /\* mapping (uint => string) vitals; *\/ */
+  /*   /\* mapping (uint => string) prescriptions; *\/ */
+  /*   /\* uint numVitals; *\/ */
+  /*   /\* uint numPrescriptions; *\/ */
+  /*   string vitals; */
+  /*   string prescriptions; */
+
+  /*   string symptoms; */
+  /* } */
 
   struct Appointment {
     string timeOfAppointment;
@@ -26,10 +30,6 @@ contract Person {
     string location;
   }
 
-  mapping (uint => Report) myReports;
-  uint numReports = 0;
-
-
   // Data members required for a Doctor
   bool isDoctor = false;
 
@@ -37,6 +37,7 @@ contract Person {
     myAddr = _addr;
     myUID = _uid;
     isDoctor = _isDoctor;
+    myHealthReport = new HealthReport(_addr);
   }
 
   function getLatestReport () public view returns(string memory, string memory, string memory) {
@@ -55,17 +56,16 @@ contract Person {
     /* } */
 
     /* return (vitals, prescriptions, myReports[numReports].symptoms); */
-    return (myReports[numReports].vitals, myReports[numReports].prescriptions, myReports[numReports].symptoms);
+    /* return (myReports[numReports].vitals, myReports[numReports].prescriptions, myReports[numReports].symptoms); */
+    return myHealthReport.getLatestReport();
   }
 
   function getReportByID (uint reportID) public view returns(string memory, string memory, string memory) {
-    require(reportID>=1 && reportID<=numReports, "The report with the given Report ID does not exist.");
-
-    return (myReports[reportID].vitals, myReports[reportID].prescriptions, myReports[reportID].symptoms);
+    return myHealthReport.getReportByID(reportID);
   }
 
   function getNumReports () public view returns(uint) {
-    return numReports;
+    return myHealthReport.getNumReports();
   }
 
   function getName () public view returns(string memory) {
@@ -76,12 +76,8 @@ contract Person {
     return myUID;
   }
 
-  function updateReportWithUID(uint reportID, string memory vitals, string memory prescriptions, string memory symptoms) public {
-    require(reportID>=1 && reportID<=numReports, "The report with the given Report ID does not exist.");
-
-    myReports[reportID].vitals = vitals;
-    myReports[reportID].prescriptions = prescriptions;
-    myReports[reportID].symptoms = symptoms;
+  function updateReportWithUID (uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
+    myHealthReport.updateReportWithUID(reportID, _vitals, _prescriptions, _symptoms);
   }
 
 }
