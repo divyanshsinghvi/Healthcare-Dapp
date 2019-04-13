@@ -25,7 +25,7 @@ App = {
     /*
      * Replace me...
      */
-  $.getJSON("Manager.json", function(manager) {
+  $.getJSON("AppInterface.json", function(manager) {
       // Instantiate a new truffle contract from the artifact
       App.contracts.Manager = TruffleContract(manager);
       // Connect provider to interact with contract
@@ -50,12 +50,22 @@ App = {
       })
 
       App.contracts.Manager.deployed().then(function(instance){
-        managerInstance = instance;
-          return managerInstance.personCount();
+          managerInstance = instance;
+          return managerInstance.isPersonRegistered();
+      }).then(function(isReg){
+          if(isReg === true){
+              console.log("I am registered shit") 
+              //              return 0;
+              return managerInstance.numPersons;
+          }
+          else{
+              managerInstance.isRegister(false)
+              return managerInstance.numPersons;
+          }
       }).then(function(personCount){
         var personRegistered = $("#personRegistered");
           personRegistered.empty();
-          for(var i = 1; i <= personCount; i++){
+          for(var i = 1; i <= numPersons; i++){
             managerInstance.person(i).then(function(person){
                 var id = person[0];
                      // Render candidate Result
