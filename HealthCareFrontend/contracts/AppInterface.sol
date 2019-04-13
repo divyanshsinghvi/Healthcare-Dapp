@@ -8,6 +8,8 @@ contract AppInterface {
   address admin;
 
   mapping (uint => Person) person;
+  mapping (address => bool) isRegistered;
+  
   uint numPersons = 0;
 
 
@@ -15,15 +17,23 @@ contract AppInterface {
     admin = msg.sender;
   }
 
-  event personRegistered(address personAddr, int personUID);
+  event personRegistered(address personContractAddr, uint personUID);
 
   modifier onlyAdmin {
     require(msg.sender == admin, "You are not authorized for this!!!");
     _;
   }
 
-  function registerPerson(address _personAddr, bool _isDoctor) onlyAdmin public {
+  function registerPerson(bool _isDoctor) public {
     numPersons++;
-    person[numPersons] = new Person(_personAddr, numPersons, _isDoctor);
+    person[numPersons] = new Person(msg.sender, numPersons, _isDoctor);
+    isRegistered[msg.sender] = true;
+
+    emit personRegistered(address(person[numPersons]), numPersons);
   }
+
+  function isPersonRegistered () public view returns(bool) {
+    return isRegistered[msg.sender];
+  }
+  
 }
