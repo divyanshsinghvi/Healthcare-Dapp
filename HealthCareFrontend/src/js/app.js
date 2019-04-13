@@ -11,7 +11,7 @@ App = {
     /*
      * Replace me...
      */
-    if (typeof web3 !=== 'undefined'){
+    if (typeof web3 !== 'undefined'){
          App.web3Provider = web3.currentProvider;
               web3 = new Web3(web3.currentProvider);
     } else {
@@ -59,7 +59,7 @@ App = {
               return managerInstance.numPersons;
           }
           else{
-              managerInstance.isRegister(false)
+              managerInstance.registerPerson(false)
               return managerInstance.numPersons;
           }
       }).then(function(personCount){
