@@ -37,17 +37,16 @@ App = {
 
   render: function(){
     var managerInstance;
-      var loader = $("#loader");
-      var content = $("#content");
-      loader.show();
-      content.hide();
-
       web3.eth.getCoinbase(function(err,account){
         if(err === null)  {
             App.account = account;
             $("#accountAddress").html("Your Account: " + account);
         }
       })
+$(document).ready(function() {
+    $("#saveprofile").click(function(){
+            alert("button");
+
 
       App.contracts.Manager.deployed().then(function(instance){
           managerInstance = instance;
@@ -62,10 +61,11 @@ App = {
                   var personClass = web3.eth.contract(person["abi"]);
                   var personInstance = personClass.at(regarr[1]);
                   console.log(personInstance)
-                  personInstance.getName(function(error, myname){
+                  newName = $("#firstname").val() +"  " +  $("#secondname").val() 
+                  personInstance.setName(newName, function(error){
                     if(!error){
-                        $("#myname").html("Your Name is : " + myname);
-                        }
+                        
+                    }
                    else
                      console.error(error);
                    }) 
@@ -77,6 +77,8 @@ App = {
       }).catch(function(error){
 	console.warn(error)
 	})
+    }); 
+    });
   }
 };
 
