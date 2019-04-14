@@ -52,14 +52,17 @@ App = {
       App.contracts.Manager.deployed().then(function(instance){
           managerInstance = instance;
           return managerInstance.isPersonRegistered();
-      }).then(function(isReg){
+      }).then(function(regarr){
+          isReg = regarr[0]
           if(isReg === true){
               console.log("I am registered shit") 
+              console.log(regarr[1])
+              var contractClass = web3.eth.contract(contractClassAbi);
+              var contractInstance = contractClass.at(regarr[1]);
           }else{
+              console.log("I am registering") 
               managerInstance.registerPerson(false)
           }
-      }).watch(function(error,event){
-          console.log("event triggered", event)
       }).catch(function(error){
 	console.warn(error)
 	})
