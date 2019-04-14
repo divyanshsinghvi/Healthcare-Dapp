@@ -11,6 +11,9 @@ contract AppInterface {
   mapping (address => bool) isRegistered;
   mapping (address => uint) personToUID;
 
+  // mapping (Person => string) activeAppointmentRequests;
+  // mapping ()
+
   uint numPersons = 0;
 
 
@@ -69,5 +72,21 @@ contract AppInterface {
   /* function updateReportWithUID(uint reportID, string memory vitals, string memory prescriptions, string memory symptoms) public { */
   /*   person[personToUID[msg.sender]].updateReportWithUID(reportID, vitals, prescriptions, symptoms); */
   /* } */
+
+  // function requestAppointment () public returns(string memory) {
+
+    
+  // }
+
+  // function approveAppointment () public returns(bool, Appointment) {
+    
+  // }
+
+  // function rejectAppointment () public returns(bool) {
+    
+  // }
+  
+  
+  
 
 }

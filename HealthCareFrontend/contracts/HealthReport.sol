@@ -45,4 +45,11 @@ contract HealthReport {
   function getNumReports () public view returns(uint) {
     return numReports;
   }
+
+  function createNewReport(string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
+    numReports++;
+    vitals[numReports] = _vitals;
+    prescriptions[numReports] = _prescriptions;
+    symptoms[numReports] = _symptoms;
+  }
 }

@@ -87,4 +87,12 @@ contract Person {
     return myHealthReport;
   }
 
+  function createNewHealthReport (string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
+    myHealthReport.createNewReport(_vitals, _prescriptions, _symptoms);
+  }
+
+  function setName (string memory _name) public {
+    name = _name;
+  }
+  
 }
