@@ -4,6 +4,8 @@ import "./HealthReport.sol";
 
 contract Person {
 
+  address appInterfaceAddress;
+
   address myAddr;
   uint myUID;
   string name;
@@ -38,6 +40,7 @@ contract Person {
     myUID = _uid;
     isDoctor = _isDoctor;
     myHealthReport = new HealthReport(_addr);
+    appInterfaceAddress = msg.sender;
   }
 
   function getLatestReport () public view returns(string memory, string memory, string memory) {
@@ -78,6 +81,10 @@ contract Person {
 
   function updateReportWithUID (uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
     myHealthReport.updateReportWithUID(reportID, _vitals, _prescriptions, _symptoms);
+  }
+
+  function getHealthReport () public view returns(HealthReport) {
+    return myHealthReport;
   }
 
 }

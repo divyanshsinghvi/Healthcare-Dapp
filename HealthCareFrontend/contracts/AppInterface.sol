@@ -34,8 +34,12 @@ contract AppInterface {
     emit personRegistered(address(person[numPersons]), numPersons);
   }
 
-  function isPersonRegistered () public view returns(bool) {
-    return isRegistered[msg.sender];
+  function isPersonRegistered () public view returns(bool, address, address) {
+    /* return isRegistered[msg.sender]; */
+    if (isRegistered[msg.sender])
+      return (isRegistered[msg.sender], address(person[personToUID[msg.sender]]), address(person[personToUID[msg.sender]].getHealthReport()));
+    else
+      return (false, address(0), address(0));
   }
 
   /* function getLatestReport () public view returns(string memory, string memory, string memory) { */
