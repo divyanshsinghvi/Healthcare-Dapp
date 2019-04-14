@@ -59,9 +59,23 @@ App = {
               console.log(regarr[1])
               $.getJSON("Person.json", function(person) {
                   console.log(person["abi"])
-                  var contractClass = web3.eth.contract(person["abi"]);
-                  var contractInstance = contractClass.at(regarr[1]);
-                  console.log(contractInstance)
+                  var personClass = web3.eth.contract(person["abi"]);
+                  var personInstance = personClass.at(regarr[1]);
+                  console.log(personInstance)
+                  personInstance.setName("M",function(error){
+                      if(!error){
+                          console.log("Your name is set to M")
+                        }
+                   else
+                     console.error(error);
+                   }) 
+                  personInstance.getName(function(error, myname){
+                    if(!error){
+                        $("#myname").html("Your Name is : " + myname);
+                        }
+                   else
+                     console.error(error);
+                   }) 
               })
           }else{
               console.log("I am registering") 
