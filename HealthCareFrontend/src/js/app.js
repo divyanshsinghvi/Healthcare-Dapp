@@ -57,8 +57,12 @@ App = {
           if(isReg === true){
               console.log("I am registered shit") 
               console.log(regarr[1])
-              var contractClass = web3.eth.contract(contractClassAbi);
-              var contractInstance = contractClass.at(regarr[1]);
+              $.getJSON("Person.json", function(person) {
+                  console.log(person["abi"])
+                  var contractClass = web3.eth.contract(person["abi"]);
+                  var contractInstance = contractClass.at(regarr[1]);
+                  console.log(contractInstance)
+              })
           }else{
               console.log("I am registering") 
               managerInstance.registerPerson(false)
