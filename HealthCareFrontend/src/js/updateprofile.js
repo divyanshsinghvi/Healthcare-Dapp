@@ -45,7 +45,6 @@ App = {
       })
 $(document).ready(function() {
     $("#saveprofile").click(function(){
-            alert("button");
 
 
       App.contracts.Manager.deployed().then(function(instance){

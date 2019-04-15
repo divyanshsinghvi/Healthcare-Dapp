@@ -64,7 +64,7 @@ App = {
                   console.log(personInstance)
                   personInstance.getName(function(error, myname){
                     if(!error){
-                        $("#myname").html("Your Name is : " + myname);
+                        $("#myname").html( myname);
                         }
                    else
                      console.error(error);
