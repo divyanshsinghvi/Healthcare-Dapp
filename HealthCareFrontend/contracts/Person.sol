@@ -1,61 +1,33 @@
 pragma solidity >=0.5.0 <0.6.0;
 
-import "./HealthReport.sol";
+import "./PersonContract.sol";
+
 
 contract Person {
 
-  address appInterfaceAddress;
+  mapping (uint => PersonContract) personInstance;
+  address healthReportFactoryAddress;
 
-  address myAddr;
-  uint myUID;
-  string name;
-  uint numAppointmentsPerDay = 5;
-
-  HealthReport myHealthReport;
-
-  /* struct Report { */
-  /*   // Mrinaal: For simplicity, keeping everything as string for now */
-  /*   /\* mapping (uint => string) vitals; *\/ */
-  /*   /\* mapping (uint => string) prescriptions; *\/ */
-  /*   /\* uint numVitals; *\/ */
-  /*   /\* uint numPrescriptions; *\/ */
-  /*   string vitals; */
-  /*   string prescriptions; */
-
-  /*   string symptoms; */
+  /* constructor (address _healthReportFactoryAddress) public { */
+  /*   healthReportFactoryAddress = _healthReportFactoryAddress; */
   /* } */
 
-  struct Appointment {
-    uint slotno;
-    uint patientId;
-    uint doctorId;
-    string requestId;
+  function initializeHealthReportFactoryAddress (address _healthReportFactoryAddress) public {
+    healthReportFactoryAddress = _healthReportFactoryAddress;
   }
 
-  mapping (string => Appointment) currentAppointments;
-  string[] activeAppointmentIds = new string[](0); 
-  mapping (uint => bool) isSlotBooked;
-  
-  mapping (uint => address) patientReportMapping;
-  
-  
+  function initializeNewPerson(address _addr, uint _uid, bool _isDoctor) public returns(address) {
+    require(healthReportFactoryAddress != address(0x00), "Address for Health Report Factory is not initialized");
 
-  /* mapping (uint => uint) activeAppointmentRequests; */
-  /* mapping (uint => string) currentPatientAppointments; */
-  /* mapping (uint => mapping (uint => string)) listOfDoctorAppointments; */
-
-  // Data members required for a Doctor
-  bool public isDoctor = false;
-
-  constructor (address _addr, uint _uid, bool _isDoctor) public {
-    myAddr = _addr;
-    myUID = _uid;
-    isDoctor = _isDoctor;
-    myHealthReport = new HealthReport(_addr);
-    appInterfaceAddress = msg.sender;
+    personInstance[_uid] = new PersonContract(_addr, _uid, _isDoctor, healthReportFactoryAddress);
+    return address(personInstance[_uid]);
   }
 
-  function getLatestReport () public view returns(string memory, string memory, string memory) {
+  function initializeInstance (uint _uid, address _addr) public {
+    personInstance[_uid] = PersonContract(_addr);
+  }
+
+  function getLatestReport (uint _uid) public view returns(string memory, string memory, string memory) {
     /* Report memory latestReport = myReports[numReports]; */
     /* uint i; */
     /* vitals = ""; */
@@ -72,153 +44,66 @@ contract Person {
 
     /* return (vitals, prescriptions, myReports[numReports].symptoms); */
     /* return (myReports[numReports].vitals, myReports[numReports].prescriptions, myReports[numReports].symptoms); */
-    return myHealthReport.getLatestReport();
+    return personInstance[_uid].getLatestReport();
   }
 
-  function getReportByID (uint reportID) public view returns(string memory, string memory, string memory) {
-    return myHealthReport.getReportByID(reportID);
+  function getReportByID (uint _uid, uint reportID) public view returns(string memory, string memory, string memory) {
+    return personInstance[_uid].getReportByID(reportID);
   }
 
-  function getNumReports () public view returns(uint) {
-    return myHealthReport.getNumReports();
+  function getNumReports (uint _uid) public view returns(uint) {
+    return personInstance[_uid].getNumReports();
   }
 
-  function getName () public view returns(string memory) {
-    return name;
+  function getName (uint _uid) public view returns(string memory) {
+    return personInstance[_uid].getName();
   }
 
-  function getUID () public view returns(uint) {
-    return myUID;
+  function getUID (uint _uid) public view returns(uint) {
+    return personInstance[_uid].getUID();
   }
 
-  function getMyAddress () public view returns(address)  {
-
-    require (msg.sender == appInterfaceAddress, "Only app interface can get a persons address");
-    return myAddr;
-  }
-  
-
-  function updateReportWithUID (uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
-    myHealthReport.updateReportWithUID(reportID, _vitals, _prescriptions, _symptoms);
+  function updateReportWithUID (uint _uid, uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
+    personInstance[_uid].updateReportWithUID(reportID, _vitals, _prescriptions, _symptoms);
   }
 
-  function getHealthReport () public view returns(HealthReport) {
-    return myHealthReport;
+  function getHealthReport (uint _uid) public view returns(address) {
+    return address(personInstance[_uid].getHealthReport());
   }
 
-  function createNewHealthReport (string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
-    myHealthReport.createNewReport(_vitals, _prescriptions, _symptoms);
+  event checkInstance(address);
+  function isDoctor(uint _uid) public returns(bool) {
+    emit checkInstance(address(personInstance[_uid]));
+    return personInstance[_uid].isDoctor();
   }
 
-  function setName (string memory _name) public {
-    name = _name;
+  function createNewHealthReport (uint _uid, string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
+    personInstance[_uid].createNewReport(_vitals, _prescriptions, _symptoms);
   }
 
-  function setDoctorFlag (bool _isDoctor) public {
-    isDoctor = _isDoctor;
+  function setName (uint _uid, string memory _name) public {
+    personInstance[_uid].setName(_name);
   }
 
-  
-  function requestAppointment (uint uid, uint dayAfter, string memory requestId, bool _isDoctor) public returns(uint){
-
-    activeAppointmentIds.push(requestId);
-    if(_isDoctor) {
-      currentAppointments[requestId] = Appointment(0, uid, myUID, requestId );
-      uint startOfDaySlots = (dayAfter-1)*numAppointmentsPerDay + 1;
-      for(uint i=startOfDaySlots; i<startOfDaySlots+numAppointmentsPerDay; i++) {
-        if(!isSlotBooked[i]) {
-
-          currentAppointments[requestId].slotno = i;
-          return i;
-        }
-      }
-      return 0;
-
-    } else {
-      /* dayAfter is actually slotno for patient */
-      currentAppointments[requestId] = Appointment(dayAfter, myUID, uid, requestId);
-      return 1;
-    }
-
+  function setDoctorFlag (uint _uid, bool _isDoctor) public {
+    personInstance[_uid].setDoctorFlag(_isDoctor);
   }
 
-  function completeAppointment (string memory requestId, bool _isDoctor) public returns(uint) {
-    
-    require (currentAppointments[requestId].patientId != 0x00, "The appointment corresponding to the request id does not exist");
-    uint delId = activeAppointmentIds.length;
-    bytes32 requestIdHash = keccak256(abi.encodePacked(requestId));
-    for(uint i=0; i<activeAppointmentIds.length; i++) {
-      if(keccak256(abi.encodePacked(activeAppointmentIds[i])) == requestIdHash) {
-        delId = i;
-        break;
-      }
-    }
 
-    require (delId>=0 && delId < activeAppointmentIds.length, "Request id was not found in the list of active appointment ids");
-
-    uint personId = 0;
-    activeAppointmentIds[delId] = activeAppointmentIds[activeAppointmentIds.length -1];
-    delete activeAppointmentIds[activeAppointmentIds.length - 1];
-
-    if(_isDoctor) {
-      isSlotBooked[currentAppointments[requestId].slotno] = false;
-      personId = currentAppointments[requestId].patientId;
-    }
-
-    delete currentAppointments[requestId];
-    return personId;
-    
+  function requestAppointment (uint _uid, uint uid, uint dayAfter, string memory requestId, bool _isDoctor) public returns(uint){
+    return personInstance[_uid].requestAppointment(uid, dayAfter, requestId, _isDoctor);
   }
 
-  function getAppointmentsData () public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory) {
-    uint[] memory slotNo = new uint[](activeAppointmentIds.length);
-    uint[] memory patientIdArray = new uint[](activeAppointmentIds.length);
-    uint[] memory doctorIdArray = new uint[](activeAppointmentIds.length);
-    byte[36][] memory requestIdArray = new byte[36][](activeAppointmentIds.length);
-    bytes memory requestIdByte;
-    for(uint i=0; i<activeAppointmentIds.length; i++) {
-      requestIdByte = bytes(activeAppointmentIds[i]);
-      for(uint j=0; j<requestIdByte.length; ++j)
-        requestIdArray[i][j] = requestIdByte[j];
-
-      slotNo[i] = currentAppointments[activeAppointmentIds[i]].slotno;
-      patientIdArray[i] = currentAppointments[activeAppointmentIds[i]].patientId;
-      doctorIdArray[i] = currentAppointments[activeAppointmentIds[i]].doctorId;
-    }
-    return (requestIdArray, slotNo, patientIdArray, doctorIdArray);
-  }
-  
-  
-
-  event printArr(string val);
-  function printArray() public {
-    for(uint i=0; i<activeAppointmentIds.length; i++)
-      emit printArr(activeAppointmentIds[i]);
+  function completeAppointment (uint _uid, string memory requestId, bool _isDoctor) public returns(uint) {
+    return personInstance[_uid].completeAppointment(requestId, _isDoctor);
   }
 
-  function grantHealthReportAccess (address doctorAddress) public returns(address)  {
-    bool success = myHealthReport.grantHealthReportAccess(doctorAddress);
-    if(success)
-      return address(myHealthReport);
-    else
-      return address(0x00);
-  }
+  /* function getAppointmentsData () public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory) { */
+  /*   return personInstance.getAppointmentsData(); */
+  /* } */
 
-  function addHealthReportToAccessList (address healthReportAddress, uint patientId) public returns(bool) {
-    
-    require (isDoctor==true, "Only doctors can add health report to their access list");
-    patientReportMapping[patientId] = healthReportAddress;
-    return true;
-    
-  }
-
-  function revokeHealthReportAccess (address doctorAddress) public {
-    myHealthReport.revokeHealthReportAccess(doctorAddress);
-  }
-
-  function removeHealthReportFromAccessList (uint patientId) public {
-    require (isDoctor==true, "Only doctors can remove health report from their access list");
-    delete patientReportMapping[patientId];
+  function printArray(uint _uid) public {
+    personInstance[_uid].printArray();
   }
 
 }
