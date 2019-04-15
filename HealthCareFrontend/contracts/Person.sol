@@ -30,10 +30,15 @@ contract Person {
     uint month;
     uint day;
     string location;
+    string appointmentId;
   }
 
+  /* mapping (uint => uint) activeAppointmentRequests; */
+  /* mapping (uint => string) currentPatientAppointments; */
+  /* mapping (uint => mapping (uint => string)) listOfDoctorAppointments; */
+
   // Data members required for a Doctor
-  bool isDoctor = false;
+  bool public isDoctor = false;
 
   constructor (address _addr, uint _uid, bool _isDoctor) public {
     myAddr = _addr;
@@ -94,5 +99,4 @@ contract Person {
   function setName (string memory _name) public {
     name = _name;
   }
-  
 }
