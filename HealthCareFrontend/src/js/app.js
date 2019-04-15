@@ -51,8 +51,6 @@ App = {
 
       App.contracts.Manager.deployed().then(function(instance){
           managerInstance = instance;
-        managerInstance.getListOfDoctors().then(function(docs){  console.log(docs[0])
-        });
           return managerInstance.isPersonRegistered();
       }).then(function(regarr){
           isReg = regarr[0]
@@ -75,6 +73,26 @@ App = {
                    }) 
               })
 
+        managerInstance.getListOfDoctors().then(function(docs){  console.log(docs[0].toString())
+            
+            $.getJSON("Person.json", function(person) {
+            for(i=0;i<parseInt(docs[0].toString());i++)
+            {
+                  var doctorClass = web3.eth.contract(person["abi"]);
+                  var doctorInstance = doctorClass.at(docs[1][i]);
+                  doctorInstance.getName(function(error, myname){
+                    if(!error){
+                console.log(docs[1][i],myname)    
+                        $(document).ready(function(){
+                            $("#doctorL").append("  <li><a href='#'>"+myname+"</a><div style=display:none>"+doctorInstance["address"]+"</div></li> ") 
+                        })
+                        $("#myname").html( myname);
+                        }
+                   else
+                     console.error(error);
+                   }) 
+            }
+        })});
           }else{
               console.log("I am registering") 
               managerInstance.registerPerson(false)
