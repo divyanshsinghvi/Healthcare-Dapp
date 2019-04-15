@@ -46,6 +46,7 @@ App = {
         if(err === null)  {
             App.account = account;
             $("#accountAddress").html("Your Account: " + account);
+            console.log(account+"account")
         }
       })
 
@@ -56,9 +57,9 @@ App = {
           isReg = regarr[0]
           if(isReg === true){
               console.log("I am registered shit") 
-              console.log(regarr[1])
+              console.log(regarr[1]+"regarr")
               $.getJSON("Person.json", function(person) {
-                  console.log(person["abi"])
+//                  console.log(person["abi"])
                   var personClass = web3.eth.contract(person["abi"]);
                   var personInstance = personClass.at(regarr[1]);
                   console.log(personInstance)
@@ -104,10 +105,23 @@ App = {
 };
 
 
+function createUUID() {
+     function s4() {
+         return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+     }
+
+     return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+ }
+
+
 
 $(function() {
-  
+  function bin2String(array) {
+  return String.fromCharCode.apply(String, array);
+}
+
   window.onclick = function (e) {
+    console.log("requestAppointment");
     if (e.target.localName == 'a') {
         console.log($(e.target.parentNode).find("span").html())
         doctoraddress = $(e.target.parentNode).find("span").html()
@@ -119,7 +133,9 @@ $(function() {
                 console.log(uid);
                 App.contracts.Manager.deployed().then(function(instance){
                   managerInstance = instance;
-                  managerInstance.requestAppointment(uid, 1, "2")
+                  req = createUUID()
+                  console.log("request id" + req)
+                  managerInstance.requestAppointment(uid, 1, req)
                   //doctorInstance.getAppointmentsData(function(err,data){console.log(data)})
                 })
               }else{
@@ -131,6 +147,40 @@ $(function() {
 
         })
          
+
+    }else if(e.target.id == 'getAppointmentForDoctor'){
+       App.contracts.Manager.deployed().then(function(instance){
+          managerInstance = instance;
+          return managerInstance.isPersonRegistered();
+      }).then(function(regarr){
+        $.getJSON("Person.json", function(person) {
+          var personClass = web3.eth.contract(person["abi"]);
+          var personInstance = personClass.at(regarr[1]);
+          console.log("Data for person is "+personInstance);
+          personInstance.getDoctorFlag(function(err,flag){
+            if(!err){
+              console.log("Am I a doctor ??" + flag)
+              if(flag===true){
+                personInstance.getAppointmentsData(function(err,data){
+                  if(!err){
+                    console.log(bin2String(data[0][18]))
+                    managerInstance.completeAppointment(bin2String(data[0][6]))
+                    console.log(data)
+                  }
+                  else
+                    console.log(err)
+                })
+              }
+            }else{
+              console.log(err)
+            }
+          })
+       }) 
+
+    })
+
+
+
 
     }
   }

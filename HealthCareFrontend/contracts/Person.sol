@@ -89,6 +89,10 @@ contract Person {
     return myUID;
   }
 
+  function getDoctorFlag () public view returns(bool) {
+    return isDoctor;
+  }
+
   function updateReportWithUID (uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
     myHealthReport.updateReportWithUID(reportID, _vitals, _prescriptions, _symptoms);
   }
