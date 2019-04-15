@@ -1,8 +1,25 @@
 pragma solidity >=0.5.0 <0.6.0;
 
-import "./HealthReport.sol";
 
-contract Person {
+// Interface contract for HealthReport
+contract HealthReportInterface {
+  function initializeNewHealthReport(address _addr) public returns(address);
+}
+
+contract HealthReport {
+  function getLatestReport () public view returns(string memory, string memory, string memory);
+
+  function getReportByID (uint reportID) public view returns(string memory, string memory, string memory);
+
+  function updateReportWithUID(uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public;
+
+  function getNumReports () public view returns(uint);
+
+  function createNewReport(string memory _vitals, string memory _prescriptions, string memory _symptoms) public;
+}
+
+
+contract PersonContract {
 
   address appInterfaceAddress;
 
@@ -13,18 +30,6 @@ contract Person {
 
   HealthReport myHealthReport;
 
-  /* struct Report { */
-  /*   // Mrinaal: For simplicity, keeping everything as string for now */
-  /*   /\* mapping (uint => string) vitals; *\/ */
-  /*   /\* mapping (uint => string) prescriptions; *\/ */
-  /*   /\* uint numVitals; *\/ */
-  /*   /\* uint numPrescriptions; *\/ */
-  /*   string vitals; */
-  /*   string prescriptions; */
-
-  /*   string symptoms; */
-  /* } */
-
   struct Appointment {
     uint slotno;
     uint patientId;
@@ -33,24 +38,25 @@ contract Person {
   }
 
   mapping (string => Appointment) currentAppointments;
-  string[] activeAppointmentIds = new string[](0); 
+  string[] activeAppointmentIds = new string[](0);
   mapping (uint => bool) isSlotBooked;
-  
-  
 
-  /* mapping (uint => uint) activeAppointmentRequests; */
-  /* mapping (uint => string) currentPatientAppointments; */
-  /* mapping (uint => mapping (uint => string)) listOfDoctorAppointments; */
 
   // Data members required for a Doctor
   bool public isDoctor = false;
 
-  constructor (address _addr, uint _uid, bool _isDoctor) public {
+  event healthReportAddress(address _addr);
+
+  constructor (address _addr, uint _uid, bool _isDoctor, address _healthReportFactoryAddress) public {
     myAddr = _addr;
     myUID = _uid;
     isDoctor = _isDoctor;
-    myHealthReport = new HealthReport(_addr);
+    /* myHealthReport = new HealthReport(_addr); */
+    address _healthAddr = HealthReportInterface(_healthReportFactoryAddress).initializeNewHealthReport(_addr);
+    myHealthReport = HealthReport(_healthAddr);
     appInterfaceAddress = msg.sender;
+
+    emit healthReportAddress(_healthAddr);
   }
 
   function getLatestReport () public view returns(string memory, string memory, string memory) {
@@ -101,7 +107,7 @@ contract Person {
     return myHealthReport;
   }
 
-  function createNewHealthReport (string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
+  function createNewReport (string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
     myHealthReport.createNewReport(_vitals, _prescriptions, _symptoms);
   }
 
@@ -113,7 +119,7 @@ contract Person {
     isDoctor = _isDoctor;
   }
 
-  
+
   function requestAppointment (uint uid, uint dayAfter, string memory requestId, bool _isDoctor) public returns(uint){
 
     activeAppointmentIds.push(requestId);
@@ -138,7 +144,7 @@ contract Person {
   }
 
   function completeAppointment (string memory requestId, bool _isDoctor) public returns(uint) {
-    
+
     require (currentAppointments[requestId].patientId != 0x00, "The appointment corresponding to the request id does not exist");
     uint delId = activeAppointmentIds.length;
     bytes32 requestIdHash = keccak256(abi.encodePacked(requestId));
@@ -162,7 +168,7 @@ contract Person {
 
     delete currentAppointments[requestId];
     return personId;
-    
+
   }
 
   function getAppointmentsData () public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory) {
@@ -182,8 +188,8 @@ contract Person {
     }
     return (requestIdArray, slotNo, patientIdArray, doctorIdArray);
   }
-  
-  
+
+
 
   event printArr(string val);
   function printArray() public {
