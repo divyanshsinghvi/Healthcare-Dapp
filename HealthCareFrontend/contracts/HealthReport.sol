@@ -3,6 +3,7 @@ pragma solidity >=0.5.0 <0.6.0;
 contract HealthReport {
 
   address owner;
+  address ownerContractAddress;
 
   mapping (uint => string) vitals;
   mapping (uint => string) prescriptions;
@@ -13,6 +14,7 @@ contract HealthReport {
 
   constructor (address _owner) public {
     owner = _owner;
+    ownerContractAddress = msg.sender;
     numReports = 0;
   }
 
