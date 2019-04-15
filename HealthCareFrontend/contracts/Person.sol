@@ -9,6 +9,7 @@ contract Person {
   address myAddr;
   uint myUID;
   string name;
+  uint numAppointmentsPerDay = 5;
 
   HealthReport myHealthReport;
 
@@ -25,13 +26,17 @@ contract Person {
   /* } */
 
   struct Appointment {
-    string timeOfAppointment;
-    uint year;
-    uint month;
-    uint day;
-    string location;
-    string appointmentId;
+    uint slotno;
+    uint patientId;
+    uint doctorId;
+    string requestId;
   }
+
+  mapping (string => Appointment) currentAppointments;
+  string[] activeAppointmentIds = new string[](0); 
+  mapping (uint => bool) isSlotBooked;
+  
+  
 
   /* mapping (uint => uint) activeAppointmentRequests; */
   /* mapping (uint => string) currentPatientAppointments; */
@@ -99,4 +104,84 @@ contract Person {
   function setName (string memory _name) public {
     name = _name;
   }
+
+  function setDoctorFlag (bool _isDoctor) public {
+    isDoctor = _isDoctor;
+  }
+
+  
+  function requestAppointment (uint uid, uint dayAfter, string memory requestId, bool _isDoctor) public returns(uint){
+
+    activeAppointmentIds.push(requestId);
+    if(_isDoctor) {
+      currentAppointments[requestId] = Appointment(0, uid, myUID, requestId );
+      uint startOfDaySlots = (dayAfter-1)*numAppointmentsPerDay + 1;
+      for(uint i=startOfDaySlots; i<startOfDaySlots+numAppointmentsPerDay; i++) {
+        if(!isSlotBooked[i]) {
+
+          currentAppointments[requestId].slotno = i;
+          return i;
+        }
+      }
+      return 0;
+
+    } else {
+      /* dayAfter is actually slotno for patient */
+      currentAppointments[requestId] = Appointment(dayAfter, myUID, uid, requestId);
+      return 0;
+    }
+
+  }
+
+  function completeAppointment (string memory requestId, bool _isDoctor) public returns(uint) {
+    
+    require (currentAppointments[requestId].patientId != 0x00, "The appointment corresponding to the request id does not exist");
+    uint delId = activeAppointmentIds.length;
+    bytes32 requestIdHash = keccak256(abi.encodePacked(requestId));
+    for(uint i=0; i<activeAppointmentIds.length; i++) {
+      if(keccak256(abi.encodePacked(activeAppointmentIds[i])) == requestIdHash) {
+        delId = i;
+        break;
+      }
+    }
+
+    require (delId>=0 && delId < activeAppointmentIds.length, "Request id was not found in the list of active appointment ids");
+
+    uint personId = 0;
+    activeAppointmentIds[delId] = activeAppointmentIds[activeAppointmentIds.length -1];
+    delete activeAppointmentIds[activeAppointmentIds.length - 1];
+
+    if(_isDoctor) {
+      isSlotBooked[currentAppointments[requestId].slotno] = false;
+      personId = currentAppointments[requestId].patientId;
+    }
+
+    delete currentAppointments[requestId];
+    return personId;
+    
+  }
+
+  // function getAppointmentsData () public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory) {
+  //   uint[] memory slotNo = new uint[](activeAppointmentIds.length);
+  //   uint[] memory patientIdArray = new uint[](activeAppointmentIds.length);
+  //   uint[] memory doctorIdArray = new uint[](activeAppointmentIds.length);
+  //   byte[36][] memory requestIdArray = new byte[36][](activeAppointmentIds.length);
+
+  //   for(uint i=0; i<activeAppointmentIds.length; i++) {
+  //     requestIdArray[][i] = activeAppointmentIds[i];
+  //     slotNo[i] = currentAppointments[activeAppointmentIds[i]].slotno;
+  //     patientIdArray[i] = currentAppointments[activeAppointmentIds[i]].patientId;
+  //     doctorIdArray[i] = currentAppointments[activeAppointmentIds[i]].doctorId;
+  //   }
+  //   return (activeAppointmentIds, slotNo, patientIdArray, doctorIdArray);
+  // }
+  
+  
+
+  event printArr(string val);
+  function printArray() public {
+    for(uint i=0; i<activeAppointmentIds.length; i++)
+      emit printArr(activeAppointmentIds[i]);
+  }
+
 }

@@ -41,13 +41,14 @@ contract AppInterface {
     personToUID[msg.sender] = numPersons;
     isRegistered[msg.sender] = true;
 
-    if (_isDoctor){
-      numDoctors++;
-      listOfDoctors[numDoctors] = person[numPersons];
-      /* listOfDoctors[numDoctors] = msg.sender; */
-    }
-
     emit personRegistered(address(person[numPersons]), numPersons);
+  }
+
+  function upgradeToDoctor () public {
+    numDoctors++;
+    listOfDoctors[numDoctors] = person[personToUID[msg.sender]];
+    listOfDoctors[numDoctors].setDoctorFlag(true);
+    /* listOfDoctors[numDoctors] = msg.sender; */
   }
 
   function isPersonRegistered () public view returns(bool, address, address) {
@@ -97,13 +98,35 @@ contract AppInterface {
     return (numDoctors, doctors);
   }
 
-  /* function requestAppointment (uint doctorUid) public returns(uint, uint) { */
+  function requestAppointment (uint doctorUid, uint dayAfter, string memory requestId) public { 
 
-  /*   require (person[doctorUid].isDoctor() == true, "Appointment cannot be requested from a non-doctor"); */
-  /*   requestId++; */
-  /*   activeAppointmentRequests[personToUID[msg.sender]] = requestId; */
-  /*   return (requestId, doctorUid); */
-  /* } */
+
+    require (dayAfter>=1 && dayAfter<=7, "You are only allowed to book appointments for 7 days from now");
+    require (person[doctorUid].isDoctor() == true, "Appointment cannot be requested from a non-doctor"); 
+
+    uint slotNo = person[doctorUid].requestAppointment(personToUID[msg.sender], dayAfter, requestId, true);
+
+
+    require (slotNo > 0, "Could not schedule your appointment with the doctor");
+    
+    slotNo = person[personToUID[msg.sender]].requestAppointment(doctorUid, slotNo, requestId,false);
+
+    // requestId++; 
+    // activeAppointmentRequests[personToUID[msg.sender]] = requestId; 
+    // return (requestId, doctorUid); 
+  } 
+
+  function completeAppointment (string memory requestId) public {
+
+
+    require (person[personToUID[msg.sender]].isDoctor(), "Only a doctor can complete the appointment");
+    uint patientId = person[personToUID[msg.sender]].completeAppointment(requestId, true);
+
+    require (patientId>0, "Patient Id does not exist");
+    
+    uint uid = person[patientId].completeAppointment(requestId, false);
+  }
+  
 
   /* function approveAppointment (uint patientId, string memory _timeOfAppointment, uint _year, uint _month, uint _day, string memory _location, string memory _appointmentId) public returns(string memory, uint, uint, uint, string memory, string memory) { */
   /*   // Appointment newAppointment = Appointment(_timeOfAppointment, _year, _month, _day, _location, _appointmentId); */
