@@ -119,7 +119,8 @@ $(function() {
                 console.log(uid);
                 App.contracts.Manager.deployed().then(function(instance){
                   managerInstance = instance;
-                //  managerInstance.requestAppointment(uid, 1, "2");
+                  managerInstance.requestAppointment(uid, 1, "2")
+                  //doctorInstance.getAppointmentsData(function(err,data){console.log(data)})
                 })
               }else{
                 console.log(error);

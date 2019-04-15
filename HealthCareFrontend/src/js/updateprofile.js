@@ -53,7 +53,6 @@ $(document).ready(function() {
       }).then(function(regarr){
           isReg = regarr[0]
           if(isReg === true){
-              console.log("I am registered shit") 
               console.log(regarr[1])
               $.getJSON("Person.json", function(person) {
                   console.log(person["abi"])
