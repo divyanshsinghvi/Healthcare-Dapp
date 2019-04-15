@@ -36,6 +36,8 @@ contract Person {
   string[] activeAppointmentIds = new string[](0); 
   mapping (uint => bool) isSlotBooked;
   
+  mapping (uint => address) patientReportMapping;
+  
   
 
   /* mapping (uint => uint) activeAppointmentRequests; */
@@ -89,6 +91,13 @@ contract Person {
     return myUID;
   }
 
+  function getMyAddress () public view returns(address)  {
+
+    require (msg.sender == appInterfaceAddress, "Only app interface can get a persons address");
+    return myAddr;
+  }
+  
+
   function updateReportWithUID (uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
     myHealthReport.updateReportWithUID(reportID, _vitals, _prescriptions, _symptoms);
   }
@@ -128,7 +137,7 @@ contract Person {
     } else {
       /* dayAfter is actually slotno for patient */
       currentAppointments[requestId] = Appointment(dayAfter, myUID, uid, requestId);
-      return 0;
+      return 1;
     }
 
   }
@@ -185,6 +194,31 @@ contract Person {
   function printArray() public {
     for(uint i=0; i<activeAppointmentIds.length; i++)
       emit printArr(activeAppointmentIds[i]);
+  }
+
+  function grantHealthReportAccess (address doctorAddress) public returns(address)  {
+    bool success = myHealthReport.grantHealthReportAccess(doctorAddress);
+    if(success)
+      return address(myHealthReport);
+    else
+      return address(0x00);
+  }
+
+  function addHealthReportToAccessList (address healthReportAddress, uint patientId) public returns(bool) {
+    
+    require (isDoctor==true, "Only doctors can add health report to their access list");
+    patientReportMapping[patientId] = healthReportAddress;
+    return true;
+    
+  }
+
+  function revokeHealthReportAccess (address doctorAddress) public {
+    myHealthReport.revokeHealthReportAccess(doctorAddress);
+  }
+
+  function removeHealthReportFromAccessList (uint patientId) public {
+    require (isDoctor==true, "Only doctors can remove health report from their access list");
+    delete patientReportMapping[patientId];
   }
 
 }

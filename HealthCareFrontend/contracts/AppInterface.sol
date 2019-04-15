@@ -111,6 +111,11 @@ contract AppInterface {
     
     slotNo = person[personToUID[msg.sender]].requestAppointment(doctorUid, slotNo, requestId,false);
 
+    require (slotNo > 0, "Could not schedule your appointment with the doctor");
+
+    address healthReportAddress = person[personToUID[msg.sender]].grantHealthReportAccess(person[doctorUid].getMyAddress());
+
+    bool success = person[doctorUid].addHealthReportToAccessList(healthReportAddress, personToUID[msg.sender]);
     // requestId++; 
     // activeAppointmentRequests[personToUID[msg.sender]] = requestId; 
     // return (requestId, doctorUid); 
@@ -126,6 +131,16 @@ contract AppInterface {
     
     uint uid = person[patientId].completeAppointment(requestId, false);
   }
+
+  function revokeHealthReportAccess (uint doctorUid) public {
+
+    require (person[doctorUid].isDoctor() == true, "Only doctor can revoke their access to a health report");
+    
+    person[personToUID[msg.sender]].revokeHealthReportAccess(person[doctorUid].getMyAddress());
+
+    person[doctorUid].removeHealthReportFromAccessList(personToUID[msg.sender]);
+  }
+  
   
 
   /* function approveAppointment (uint patientId, string memory _timeOfAppointment, uint _year, uint _month, uint _day, string memory _location, string memory _appointmentId) public returns(string memory, uint, uint, uint, string memory, string memory) { */
