@@ -111,22 +111,25 @@ $(function() {
     if (e.target.localName == 'a') {
         console.log($(e.target.parentNode).find("span").html())
         doctoraddress = $(e.target.parentNode).find("span").html()
-        // $.getJSON("Person.json", function(person) {
-        //     var doctorClass = web3.eth.contract(person["abi"]);
-        //     var doctorInstance = doctorClass.at(doctoraddress);
-        //          doctorInstance.getName(function(error, myname){
-        //             if(!error){
-        //                 console.log(doctoraddress,myname)    
-        //                 $(document).ready(function(){
-        //                     $("#doctorL").append()
-        //                 })
-        //                 $("#myname").html( myname);
-        //                 }
-        //            else
-        //              console.error(error);
-        //            })
+        $.getJSON("Person.json", function(person) {
+            var doctorClass = web3.eth.contract(person["abi"]);
+            var doctorInstance = doctorClass.at(doctoraddress);
+            doctorInstance.getUID(function(error,uid){
+              if(!error){
+                console.log(uid);
+                App.contracts.Manager.deployed().then(function(instance){
+                  managerInstance = instance;
+                //  managerInstance.requestAppointment(uid, 1, "2");
+                })
+              }else{
+                console.log(error);
+              }
+            })
+            
 
-        // }
+
+        })
+         
 
     }
   }
