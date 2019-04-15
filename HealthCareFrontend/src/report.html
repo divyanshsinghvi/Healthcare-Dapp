@@ -7,6 +7,15 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Update Profile</title>
 
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+<style>
+    .card-custom {
+        max-width: 128px;
+    }
+</style>
+
+  
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
@@ -18,12 +27,16 @@
     <![endif]-->
   </head>
   <body>
+
 <div class="container">
     <h1>All My report</h1>
-    <table id="myreport"></table>
+    <!--table id="myreport"></table-->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+      <div id="reports"> 
+    </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
+    
     <script src="js/bootstrap.min.js"></script>
     <script src="js/web3.min.js"></script>
     <script src="js/truffle-contract.js"></script>

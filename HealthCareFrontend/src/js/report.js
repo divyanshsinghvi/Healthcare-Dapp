@@ -60,54 +60,67 @@ $(document).ready(function() {
                   console.log(personInstance)
                   var reports = new Array();
 
-                  personInstance.createNewHealthReport("weight:23","cold","crocin",function(error){
-                        if(!error){
-                            console.log("Your name is set to M")
-                          }
-                        else
-                            console.log(error);
+                  // personInstance.createNewHealthReport("weight:23","cold","crocin",function(error){
+                  //       if(!error){
+                  //           console.log("Your name is set to M")
+                  //         }
+                  //       else
+                  //           console.log(error);
 
-                     })
-                     personInstance.createNewHealthReport("weight:25","fever","crocin",function(error){
-                        if(!error){
-                            console.log("Your name is set to M")
-                          }
-                        else
-                            console.log(error);
+                  //    })
+                  //    personInstance.createNewHealthReport("weight:25","fever","crocin",function(error){
+                  //       if(!error){
+                  //           console.log("Your name is set to M")
+                  //         }
+                  //       else
+                  //           console.log(error);
 
-                     })
-                    personInstance.getLatestReport(function(error,myreport){
-                      if(!error){
+                  //    })
+                    personInstance.getLatestReport(function(error,myreport){  
+                    if(!error){
                           var i;
                           console.log(myreport)
                           for(i=0;i<myreport.length;i++){
-                            reports.push(myreport[i])
+                            reports.push(myreport)
                           }
-                      }
-                      else
-                          console.error(error);
-                      
-                    })
+                          var table = $("<table />");
+                          table[0].border = "1";
 
-                    var table = $("<table />");
-                    table[0].border = "1";
-
-                    var columnCount = reports[0].length;
+                          var columnCount = reports[0].length;
+                          console.log("No of words is " + columnCount)
                                  //Add the data rows.
-                    for (var i = 1; i < myreport.length; i++) {
-                        row = $(table[0].insertRow(-1));
-                        for (var j = 0; j < columnCount; j++) {
-                            var cell = $("<td />");
-                            cell.html(myreport[i][j]);
-                            row.append(cell);
-                        }
-                    }
+                          row = $(table[0].insertRow(-1));
+                          for (var i = 0; i < myreport.length; i++) {
+                                var cell = $("<td />");
+                                cell.html(myreport[i]);
+                                console.log("This is element of my report " + myreport[i] )
+                                row.append(cell);
+                        
+                          }
              
                     var dvTable = $("#myreport");
                     dvTable.html("");
                     dvTable.append(table);
 
-                  
+                    $(document).ready(function(){
+                      var htmlreport = "";
+                       for (var i = 0; i < myreport.length; i++) {
+                                var cell = "<h6 >";
+                                cell += myreport[i];
+                                cell += "</h6>"
+                                htmlreport+=cell
+                                console.log("This is element of my report " + myreport[i] )            
+                          }
+                      $("#reports").append('<div class="card text-white bg-info mb-3" style="max-width: 18rem;"><div class="card-body">'+htmlreport+'</div></div>' )
+                    })
+                      }
+                      else{
+                          console.error(error);
+                      }
+                      return reports;
+                    })
+                    
+                   
               })
           }else{
               console.log("I am registering") 
