@@ -61,13 +61,21 @@ $(document).ready(function() {
                   var personInstance = personClass.at(regarr[1]);
                   console.log(personInstance)
                   newName = $("#firstname").val() +"  " +  $("#secondname").val() 
+
                   personInstance.setName(newName, function(error){
                     if(!error){
-                        
+                        console.log("Name set")
                     }
                    else
                      console.error(error);
-                   }) 
+                   })
+                     role = $('input[name=role]:checked').val();
+                  console.log(role)
+                  if(role==='true'){
+                    console.log("entered")
+                    managerInstance.upgradeToDoctor();
+                  }
+ 
               })
           }else{
               console.log("I am registering") 

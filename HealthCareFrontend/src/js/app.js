@@ -51,6 +51,8 @@ App = {
 
       App.contracts.Manager.deployed().then(function(instance){
           managerInstance = instance;
+        managerInstance.getListOfDoctors().then(function(docs){  console.log(docs[0])
+        });
           return managerInstance.isPersonRegistered();
       }).then(function(regarr){
           isReg = regarr[0]
@@ -62,6 +64,8 @@ App = {
                   var personClass = web3.eth.contract(person["abi"]);
                   var personInstance = personClass.at(regarr[1]);
                   console.log(personInstance)
+                  //import("search.js").then(function)
+                  //countries=[personInstance]
                   personInstance.getName(function(error, myname){
                     if(!error){
                         $("#myname").html( myname);
@@ -70,6 +74,7 @@ App = {
                      console.error(error);
                    }) 
               })
+
           }else{
               console.log("I am registering") 
               managerInstance.registerPerson(false)

@@ -91,7 +91,7 @@ contract AppInterface {
     address[] memory doctors = new address[](numDoctors);
 
     for (uint i=1; i<=numDoctors; ++i){
-      doctors[i] = address(listOfDoctors[i]);
+      doctors[i-1] = address(listOfDoctors[i]);
       /* doctors[i] = listOfDoctors[i]; */
     }
 
