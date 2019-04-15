@@ -1,42 +1,42 @@
 pragma solidity >=0.5.0 <0.6.0;
 
 // Interface contract for Person
-contract Person {
+contract PersonInterface {
   function initializeHealthReportFactoryAddress (address _healthReportFactoryAddress) public;
 
   function initializeNewPerson(address _addr, uint _uid, bool _isDoctor) public returns(address);
+}
 
-  function initializeInstance(uint _uid, address _addr) public;
+contract Person {
+  function getLatestReport () public view returns(string memory, string memory, string memory);
 
-  function getLatestReport (uint _uid) public view returns(string memory, string memory, string memory);
+  function getReportByID (uint reportID) public view returns(string memory, string memory, string memory);
 
-  function getReportByID (uint _uid, uint reportID) public view returns(string memory, string memory, string memory);
+  function getNumReports () public view returns(uint);
 
-  function getNumReports (uint _uid) public view returns(uint);
+  function getName () public view returns(string memory);
 
-  function getName (uint _uid) public view returns(string memory);
+  function getUID () public view returns(uint);
 
-  function getUID (uint _uid) public view returns(uint);
+  function updateReportWithUID (uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public;
 
-  function updateReportWithUID (uint _uid, uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public;
+  function getHealthReport () public view returns(address);
 
-  function getHealthReport (uint _uid) public view returns(address);
+  function createNewHealthReport (string memory _vitals, string memory _prescriptions, string memory _symptoms) public;
 
-  function createNewHealthReport (uint _uid, string memory _vitals, string memory _prescriptions, string memory _symptoms) public;
+  function setName (string memory _name) public;
 
-  function setName (uint _uid, string memory _name) public;
+  function setDoctorFlag (bool _isDoctor) public;
 
-  function setDoctorFlag (uint _uid, bool _isDoctor) public;
+  function isDoctor() public view returns(bool);
 
-  function isDoctor(uint _uid) public view returns(bool);
+  function requestAppointment (uint uid, uint dayAfter, string memory requestId, bool _isDoctor) public returns(uint);
 
-  function requestAppointment (uint _uid, uint uid, uint dayAfter, string memory requestId, bool _isDoctor) public returns(uint);
+  function completeAppointment (string memory requestId, bool _isDoctor) public returns(uint);
 
-  function completeAppointment (uint _uid, string memory requestId, bool _isDoctor) public returns(uint);
+  function getAppointmentsData () public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory);
 
-  function getAppointmentsData (uint _uid) public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory);
-
-  function printArray(uint _uid) public;
+  function printArray() public;
 }
 
 
@@ -54,7 +54,7 @@ contract AppInterface {
   uint numPersons = 0;
   uint numDoctors = 0;
 
-  Person personFactory;
+  PersonInterface personFactory;
 
 
   // An event which can be fired whenever a new person registers
@@ -63,7 +63,7 @@ contract AppInterface {
 
   constructor (address _personFactoryAddress) public {
     admin = msg.sender;
-    personFactory = Person(_personFactoryAddress);
+    personFactory = PersonInterface(_personFactoryAddress);
   }
 
   modifier onlyAdmin {
@@ -76,26 +76,26 @@ contract AppInterface {
     /* person[numPersons] = new Person(msg.sender, numPersons, _isDoctor); */
     address _addr = personFactory.initializeNewPerson(msg.sender, numPersons, _isDoctor);
     person[numPersons] = Person(_addr);
-    // person[numPersons].initializeInstance(_addr);
     personToUID[msg.sender] = numPersons;
     isRegistered[msg.sender] = true;
 
     emit personRegistered(address(person[numPersons]), numPersons);
   }
 
-  event checkAddress(address);
+  event checkUint(uint i);
+  event checkAddress(address a);
+  event checkPerson(Person p);
   function upgradeToDoctor () public {
     numDoctors++;
-    emit checkAddress(address(person[personToUID[msg.sender]]));
     listOfDoctors[numDoctors] = person[personToUID[msg.sender]];
-    listOfDoctors[numDoctors].setDoctorFlag(personToUID[msg.sender], true);
-    /* listOfDoctors[numDoctors] = msg.sender; */
+    listOfDoctors[numDoctors].setDoctorFlag(true);
+    // person[personToUID[msg.sender]].setDoctorFlag(personToUID[msg.sender], true);
   }
 
   function isPersonRegistered () public view returns(bool, address, address) {
     /* return isRegistered[msg.sender]; */
     if (isRegistered[msg.sender])
-      return (isRegistered[msg.sender], address(person[personToUID[msg.sender]]), person[personToUID[msg.sender]].getHealthReport(personToUID[msg.sender]));
+      return (isRegistered[msg.sender], address(person[personToUID[msg.sender]]), person[personToUID[msg.sender]].getHealthReport());
     else
       return (false, address(0), address(0));
   }
@@ -143,14 +143,14 @@ contract AppInterface {
 
 
     require (dayAfter>=1 && dayAfter<=7, "You are only allowed to book appointments for 7 days from now");
-    require (person[doctorUid].isDoctor(doctorUid) == true, "Appointment cannot be requested from a non-doctor");
+    require (person[doctorUid].isDoctor() == true, "Appointment cannot be requested from a non-doctor");
 
-    uint slotNo = person[doctorUid].requestAppointment(doctorUid, personToUID[msg.sender], dayAfter, requestId, true);
+    uint slotNo = person[doctorUid].requestAppointment(personToUID[msg.sender], dayAfter, requestId, true);
 
 
     require (slotNo > 0, "Could not schedule your appointment with the doctor");
 
-    slotNo = person[personToUID[msg.sender]].requestAppointment(personToUID[msg.sender], doctorUid, slotNo, requestId,false);
+    slotNo = person[personToUID[msg.sender]].requestAppointment(doctorUid, slotNo, requestId,false);
 
     // requestId++;
     // activeAppointmentRequests[personToUID[msg.sender]] = requestId;
@@ -160,12 +160,12 @@ contract AppInterface {
   function completeAppointment (string memory requestId) public {
 
 
-    require (person[personToUID[msg.sender]].isDoctor(personToUID[msg.sender]), "Only a doctor can complete the appointment");
-    uint patientId = person[personToUID[msg.sender]].completeAppointment(personToUID[msg.sender], requestId, true);
+    require (person[personToUID[msg.sender]].isDoctor(), "Only a doctor can complete the appointment");
+    uint patientId = person[personToUID[msg.sender]].completeAppointment(requestId, true);
 
     require (patientId>0, "Patient Id does not exist");
 
-    uint uid = person[patientId].completeAppointment(patientId, requestId, false);
+    uint uid = person[patientId].completeAppointment(requestId, false);
   }
 
 

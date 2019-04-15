@@ -2,9 +2,11 @@ pragma solidity >=0.5.0 <0.6.0;
 
 
 // Interface contract for HealthReport
-contract HealthReport {
+contract HealthReportInterface {
   function initializeNewHealthReport(address _addr) public returns(address);
+}
 
+contract HealthReport {
   function getLatestReport () public view returns(string memory, string memory, string memory);
 
   function getReportByID (uint reportID) public view returns(string memory, string memory, string memory);
@@ -28,18 +30,6 @@ contract PersonContract {
 
   HealthReport myHealthReport;
 
-  /* struct Report { */
-  /*   // Mrinaal: For simplicity, keeping everything as string for now */
-  /*   /\* mapping (uint => string) vitals; *\/ */
-  /*   /\* mapping (uint => string) prescriptions; *\/ */
-  /*   /\* uint numVitals; *\/ */
-  /*   /\* uint numPrescriptions; *\/ */
-  /*   string vitals; */
-  /*   string prescriptions; */
-
-  /*   string symptoms; */
-  /* } */
-
   struct Appointment {
     uint slotno;
     uint patientId;
@@ -52,21 +42,21 @@ contract PersonContract {
   mapping (uint => bool) isSlotBooked;
 
 
-
-  /* mapping (uint => uint) activeAppointmentRequests; */
-  /* mapping (uint => string) currentPatientAppointments; */
-  /* mapping (uint => mapping (uint => string)) listOfDoctorAppointments; */
-
   // Data members required for a Doctor
   bool public isDoctor = false;
+
+  event healthReportAddress(address _addr);
 
   constructor (address _addr, uint _uid, bool _isDoctor, address _healthReportFactoryAddress) public {
     myAddr = _addr;
     myUID = _uid;
     isDoctor = _isDoctor;
     /* myHealthReport = new HealthReport(_addr); */
-    myHealthReport = HealthReport(HealthReport(_healthReportFactoryAddress).initializeNewHealthReport(_addr));
+    address _healthAddr = HealthReportInterface(_healthReportFactoryAddress).initializeNewHealthReport(_addr);
+    myHealthReport = HealthReport(_healthAddr);
     appInterfaceAddress = msg.sender;
+
+    emit healthReportAddress(_healthAddr);
   }
 
   function getLatestReport () public view returns(string memory, string memory, string memory) {
@@ -177,23 +167,23 @@ contract PersonContract {
 
   }
 
-  /* function getAppointmentsData () public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory) { */
-  /*   uint[] memory slotNo = new uint[](activeAppointmentIds.length); */
-  /*   uint[] memory patientIdArray = new uint[](activeAppointmentIds.length); */
-  /*   uint[] memory doctorIdArray = new uint[](activeAppointmentIds.length); */
-  /*   byte[36][] memory requestIdArray = new byte[36][](activeAppointmentIds.length); */
-  /*   bytes memory requestIdByte; */
-  /*   for(uint i=0; i<activeAppointmentIds.length; i++) { */
-  /*     requestIdByte = bytes(activeAppointmentIds[i]); */
-  /*     for(uint j=0; j<requestIdByte.length; ++j) */
-  /*       requestIdArray[i][j] = requestIdByte[j]; */
+  function getAppointmentsData () public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory) {
+    uint[] memory slotNo = new uint[](activeAppointmentIds.length);
+    uint[] memory patientIdArray = new uint[](activeAppointmentIds.length);
+    uint[] memory doctorIdArray = new uint[](activeAppointmentIds.length);
+    byte[36][] memory requestIdArray = new byte[36][](activeAppointmentIds.length);
+    bytes memory requestIdByte;
+    for(uint i=0; i<activeAppointmentIds.length; i++) {
+      requestIdByte = bytes(activeAppointmentIds[i]);
+      for(uint j=0; j<requestIdByte.length; ++j)
+        requestIdArray[i][j] = requestIdByte[j];
 
-  /*     slotNo[i] = currentAppointments[activeAppointmentIds[i]].slotno; */
-  /*     patientIdArray[i] = currentAppointments[activeAppointmentIds[i]].patientId; */
-  /*     doctorIdArray[i] = currentAppointments[activeAppointmentIds[i]].doctorId; */
-  /*   } */
-  /*   return (requestIdArray, slotNo, patientIdArray, doctorIdArray); */
-  /* } */
+      slotNo[i] = currentAppointments[activeAppointmentIds[i]].slotno;
+      patientIdArray[i] = currentAppointments[activeAppointmentIds[i]].patientId;
+      doctorIdArray[i] = currentAppointments[activeAppointmentIds[i]].doctorId;
+    }
+    return (requestIdArray, slotNo, patientIdArray, doctorIdArray);
+  }
 
 
 
