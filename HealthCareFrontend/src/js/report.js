@@ -60,22 +60,22 @@ $(document).ready(function() {
                   console.log(personInstance)
                   var reports = new Array();
 
-                  personInstance.createNewHealthReport("weight:23","cold","crocin",function(error){
-                        if(!error){
-                            console.log("Your name is set to M")
-                          }
-                        else
-                            console.log(error);
+                  // personInstance.createNewHealthReport("weight:23","cold","crocin",function(error){
+                  //       if(!error){
+                  //           console.log("Your name is set to M")
+                  //         }
+                  //       else
+                  //           console.log(error);
 
-                     })
-                     personInstance.createNewHealthReport("weight:25","fever","crocin",function(error){
-                        if(!error){
-                            console.log("Your name is set to M")
-                          }
-                        else
-                            console.log(error);
+                  //    })
+                  //    personInstance.createNewHealthReport("weight:25","fever","crocin",function(error){
+                  //       if(!error){
+                  //           console.log("Your name is set to M")
+                  //         }
+                  //       else
+                  //           console.log(error);
 
-                     })
+                  //    })
                     personInstance.getLatestReport(function(error,myreport){
                       if(!error){
                           var i;
@@ -83,20 +83,14 @@ $(document).ready(function() {
                           for(i=0;i<myreport.length;i++){
                             reports.push(myreport[i])
                           }
-                      }
-                      else
-                          console.error(error);
-                      
-                    })
+                          var table = $("<table />");
+                          table[0].border = "1";
 
-                    var table = $("<table />");
-                    table[0].border = "1";
-
-                    var columnCount = reports[0].length;
+                          var columnCount = reports[0].length;
                                  //Add the data rows.
-                    for (var i = 1; i < myreport.length; i++) {
-                        row = $(table[0].insertRow(-1));
-                        for (var j = 0; j < columnCount; j++) {
+                          for (var i = 1; i < myreport.length; i++) {
+                              row = $(table[0].insertRow(-1));
+                          for (var j = 0; j < columnCount; j++) {
                             var cell = $("<td />");
                             cell.html(myreport[i][j]);
                             row.append(cell);
@@ -106,8 +100,14 @@ $(document).ready(function() {
                     var dvTable = $("#myreport");
                     dvTable.html("");
                     dvTable.append(table);
-
-                  
+                      }
+                      else{
+                          console.error(error);
+                      }
+                      return reports;
+                    })
+                    
+                   
               })
           }else{
               console.log("I am registering") 
