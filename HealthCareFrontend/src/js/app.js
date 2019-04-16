@@ -88,7 +88,6 @@ App = {
                         $(document).ready(function(){
                             $("#doctorL").append('<li><a href="#">'+myname+'</a><span  style=display:none>'+d[i]+'</span></li>') 
                         })
-                        $("#myname").html( myname);
                         }
                    else
                      console.error(error);
@@ -126,7 +125,11 @@ $(function() {
         console.log("requestAppointment");
       if (e.target.localName == 'a') {
         console.log($(e.target.parentNode).find("span").html())
-        doctoraddress = $(e.target.parentNode).find("span").html()
+          doctoraddress = $(e.target.parentNode).find("span").html()
+          valu = $("#myInput").val()
+          if(valu == ''){
+            valu = 1;
+          }
         $.getJSON("PersonContract.json", function(person) {
             var doctorClass = web3.eth.contract(person["abi"]);
             var doctorInstance = doctorClass.at(doctoraddress);
@@ -137,7 +140,7 @@ $(function() {
                   managerInstance = instance;
                   req = createUUID()
                   console.log("request id" + req)
-                  managerInstance.requestAppointment(uid, 2, req)
+                  managerInstance.requestAppointment(uid, valu, req)
                   //doctorInstance.getAppointmentsData(function(err,data){console.log(data)})
                 })
               }else{
