@@ -43,10 +43,15 @@ App = {
             $("#accountAddress").html("Your Account: " + account);
         }
       })
-$(document).ready(function() {
-    $("#saveprofile").click(function(){
+  }
+};
 
 
+$(function(){
+   
+    $("#saveprofile").click(function(e){
+        e.preventDefault()
+    console.log("Inside save profile");
       App.contracts.Manager.deployed().then(function(instance){
           managerInstance = instance;
           return managerInstance.isPersonRegistered();
@@ -66,7 +71,7 @@ $(document).ready(function() {
                         console.log("Name set")
                     }
                    else
-                     console.error(error);
+                     console.log(error);
                    })
                      role = $('input[name=role]:checked').val();
                   console.log(role)
@@ -84,14 +89,9 @@ $(document).ready(function() {
 	console.warn(error)
 	})
     }); 
-    });
-  }
-};
 
-
-
-$(function() {
-  $(window).load(function() {
+    $(window).load(function() {
     App.init();
   });
-});
+
+})
