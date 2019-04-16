@@ -101,7 +101,7 @@ contract PersonContract {
   }
 
   function getUID () public view returns(uint) {
-    require (msg.sender == myAddr || msg.sender == appInterfaceAddress, "Function can be called by myself or app interface");
+    /* require (msg.sender == myAddr || msg.sender == appInterfaceAddress, "Function can be called by myself or app interface"); */
 
     return myUID;
   }

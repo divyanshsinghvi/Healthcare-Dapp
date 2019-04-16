@@ -184,6 +184,13 @@ contract AppInterface {
     person[doctorUid].removeHealthReportFromAccessList(personToUID[msg.sender]);
   }
 
+  function getPatientHealthReportAddress(uint patientId) public view returns(address) {
+    require (person[personToUID[msg.sender]].isDoctor(), "Only a doctor can ask for a patients report");
+    require (patientId>=1 && patientId<=numPersons, "The personId is invalid");
+
+    return address(person[patientId].getHealthReport());
+  }
+
 
   /* function approveAppointment (uint patientId, string memory _timeOfAppointment, uint _year, uint _month, uint _day, string memory _location, string memory _appointmentId) public returns(string memory, uint, uint, uint, string memory, string memory) { */
   /*   // Appointment newAppointment = Appointment(_timeOfAppointment, _year, _month, _day, _location, _appointmentId); */
