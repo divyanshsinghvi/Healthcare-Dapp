@@ -29,3 +29,16 @@ One of the major challenge which we faced is the limitation on the size of the C
 - Currently, we have not implemented the features related to Pharmacy and Pathological test lab which we had planned initially. However, we do believe that these features can be implemented due to the degree of modifiability of our application.
 - Presently, we have not taken into consideration the genuinity of the doctors. 
 
+
+
+## COMMANDS
+npm -i
+cd HealthCareFrontend
+npm -i
+npm install -g truffle
+truffle compile
+truffle migrate --reset
+npm run dev
+
+
+localhost:3000 will be open. Keep your metamask plugin along with it.
