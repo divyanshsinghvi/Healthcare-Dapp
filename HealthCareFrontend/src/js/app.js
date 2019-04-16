@@ -56,11 +56,11 @@ App = {
       }).then(function(regarr){
           isReg = regarr[0]
           if(isReg === true){
-              console.log("I am registered shit") 
               console.log(regarr[1]+"regarr")
               $.getJSON("PersonContract.json", function(person) {
 //                  console.log(person["abi"])
                   var personClass = web3.eth.contract(person["abi"]);
+                  console.log(regarr[1])
                   var personInstance = personClass.at(regarr[1]);
                   console.log(personInstance)
                   //import("search.js").then(function)
@@ -74,18 +74,19 @@ App = {
                    }) 
               })
 
-        managerInstance.getListOfDoctors().then(function(docs){  console.log(docs[0].toString())
+        managerInstance.getListOfDoctors().then(function(docs){  console.log(docs)
             
             $.getJSON("PersonContract.json", function(person) {
-            for(i=0;i<parseInt(docs[0].toString());i++)
-            {
+            for(let i=0;i<parseInt(docs[0].toString());i++)
+                {
+                    var d = docs[1];
                   var doctorClass = web3.eth.contract(person["abi"]);
-                  var doctorInstance = doctorClass.at(docs[1][i]);
+                var doctorInstance = doctorClass.at(docs[1][i]);
                   doctorInstance.getName(function(error, myname){
                     if(!error){
-                console.log(docs[1][i],myname)    
+                console.log(d[i],myname,doctorInstance)    
                         $(document).ready(function(){
-                            $("#doctorL").append('<li><a href="#">'+myname+'</a><span  style=display:none>'+doctorInstance["address"]+'</span></li>') 
+                            $("#doctorL").append('<li><a href="#">'+myname+'</a><span  style=display:none>'+d[i]+'</span></li>') 
                         })
                         $("#myname").html( myname);
                         }
@@ -121,8 +122,9 @@ $(function() {
 }
 
   window.onclick = function (e) {
-    if (e.target.localName == 'a') {
+      
         console.log("requestAppointment");
+      if (e.target.localName == 'a') {
         console.log($(e.target.parentNode).find("span").html())
         doctoraddress = $(e.target.parentNode).find("span").html()
         $.getJSON("PersonContract.json", function(person) {
@@ -135,7 +137,7 @@ $(function() {
                   managerInstance = instance;
                   req = createUUID()
                   console.log("request id" + req)
-                  managerInstance.requestAppointment(uid, 1, req)
+                  managerInstance.requestAppointment(uid, 2, req)
                   //doctorInstance.getAppointmentsData(function(err,data){console.log(data)})
                 })
               }else{
