@@ -74,22 +74,6 @@ App = {
                    }) 
               })
 
-              $.getJSON("HealthReportContract.json",function(report){
-                                var reportClass = web3.eth.contract(report["abi"]);
-                                console.log("reportis is "+regarr[2])
-                                var reportInstance = reportClass.at(regarr[2]);
-                                console.log("myreport is "+reportInstance);
-              
-                                reportInstance.getLatestReport(function(error,myreport){
-                                                    if(!error)
-                                                      console.log("string"+myreport[0])
-                                                    else
-                                                   console.log(error)
-                                                  })
-                    
-              })
-
-            
 
         managerInstance.getListOfDoctors().then(function(docs){  console.log(docs)
             
