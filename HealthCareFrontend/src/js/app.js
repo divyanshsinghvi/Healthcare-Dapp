@@ -88,6 +88,7 @@ App = {
                         $(document).ready(function(){
                             $("#doctorL").append('<li><a href="#">'+myname+'</a><span  style=display:none>'+d[i]+'</span></li>') 
                         })
+                        $("#myname").html( myname);
                         }
                    else
                      console.error(error);
