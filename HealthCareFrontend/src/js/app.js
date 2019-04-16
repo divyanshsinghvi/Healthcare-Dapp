@@ -58,7 +58,7 @@ App = {
           if(isReg === true){
               console.log("I am registered shit") 
               console.log(regarr[1]+"regarr")
-              $.getJSON("Person.json", function(person) {
+              $.getJSON("PersonContract.json", function(person) {
 //                  console.log(person["abi"])
                   var personClass = web3.eth.contract(person["abi"]);
                   var personInstance = personClass.at(regarr[1]);
@@ -76,7 +76,7 @@ App = {
 
         managerInstance.getListOfDoctors().then(function(docs){  console.log(docs[0].toString())
             
-            $.getJSON("Person.json", function(person) {
+            $.getJSON("PersonContract.json", function(person) {
             for(i=0;i<parseInt(docs[0].toString());i++)
             {
                   var doctorClass = web3.eth.contract(person["abi"]);
@@ -125,7 +125,7 @@ $(function() {
         console.log("requestAppointment");
         console.log($(e.target.parentNode).find("span").html())
         doctoraddress = $(e.target.parentNode).find("span").html()
-        $.getJSON("Person.json", function(person) {
+        $.getJSON("PersonContract.json", function(person) {
             var doctorClass = web3.eth.contract(person["abi"]);
             var doctorInstance = doctorClass.at(doctoraddress);
             doctorInstance.getUID(function(error,uid){
@@ -150,7 +150,7 @@ $(function() {
           managerInstance = instance;
           return managerInstance.isPersonRegistered();
       }).then(function(regarr){
-        $.getJSON("Person.json", function(person) {
+        $.getJSON("PersonContract.json", function(person) {
           var personClass = web3.eth.contract(person["abi"]);
           var personInstance = personClass.at(regarr[1]);
           console.log("Data for person is "+personInstance);
@@ -163,7 +163,7 @@ $(function() {
                     for(j=0;j<data[0].length;j++){
                         console.log(bin2String(data[0][j]))
                     }
-                    managerInstance.completeAppointment(bin2String(data[0][0]))
+                        //                    managerInstance.completeAppointment(bin2String(data[0][0]))
                     console.log(data)
                   }
                   else
@@ -177,9 +177,6 @@ $(function() {
        }) 
 
     })
-
-
-
 
     }
   }
