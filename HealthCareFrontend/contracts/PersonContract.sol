@@ -16,6 +16,10 @@ contract HealthReport {
   function getNumReports () public view returns(uint);
 
   function createNewReport(string memory _vitals, string memory _prescriptions, string memory _symptoms) public;
+
+  function grantHealthReportAccess (address doctorAddress) public returns(bool);
+
+  function revokeHealthReportAccess (address doctorAddress) public;
 }
 
 
@@ -41,11 +45,13 @@ contract PersonContract {
   string[] activeAppointmentIds = new string[](0);
   mapping (uint => bool) isSlotBooked;
 
+  mapping (uint => address) patientReportMapping;
+
 
   // Data members required for a Doctor
   bool public isDoctor = false;
 
-  event healthReportAddress(address _addr);
+  event healthReportAddress(address _addr, uint uid);
 
   constructor (address _addr, uint _uid, bool _isDoctor, address _healthReportFactoryAddress) public {
     myAddr = _addr;
@@ -56,7 +62,7 @@ contract PersonContract {
     myHealthReport = HealthReport(_healthAddr);
     appInterfaceAddress = msg.sender;
 
-    emit healthReportAddress(_healthAddr);
+    emit healthReportAddress(_healthAddr, _uid);
   }
 
   function getLatestReport () public view returns(string memory, string memory, string memory) {
@@ -99,6 +105,12 @@ contract PersonContract {
     return isDoctor;
   }
 
+  function getMyAddress () public view returns(address)  {
+
+    // require (msg.sender == appInterfaceAddress, "Only app interface can get a persons address");
+    return myAddr;
+  }
+
   function updateReportWithUID (uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
     myHealthReport.updateReportWithUID(reportID, _vitals, _prescriptions, _symptoms);
   }
@@ -130,6 +142,7 @@ contract PersonContract {
         if(!isSlotBooked[i]) {
 
           currentAppointments[requestId].slotno = i;
+          isSlotBooked[i] = true;
           return i;
         }
       }
@@ -138,7 +151,7 @@ contract PersonContract {
     } else {
       /* dayAfter is actually slotno for patient */
       currentAppointments[requestId] = Appointment(dayAfter, myUID, uid, requestId);
-      return 0;
+      return 1;
     }
 
   }
@@ -195,6 +208,32 @@ contract PersonContract {
   function printArray() public {
     for(uint i=0; i<activeAppointmentIds.length; i++)
       emit printArr(activeAppointmentIds[i]);
+  }
+
+
+  function grantHealthReportAccess (address doctorAddress) public returns(address)  {
+    bool success = myHealthReport.grantHealthReportAccess(doctorAddress);
+    if(success)
+      return address(myHealthReport);
+    else
+      return address(0x00);
+  }
+
+  function addHealthReportToAccessList (address healthReportAddress, uint patientId) public returns(bool) {
+    
+    require (isDoctor==true, "Only doctors can add health report to their access list");
+    patientReportMapping[patientId] = healthReportAddress;
+    return true;
+    
+  }
+
+  function revokeHealthReportAccess (address doctorAddress) public {
+    myHealthReport.revokeHealthReportAccess(doctorAddress);
+  }
+
+  function removeHealthReportFromAccessList (uint patientId) public {
+    require (isDoctor==true, "Only doctors can remove health report from their access list");
+    delete patientReportMapping[patientId];
   }
 
 }

@@ -54,4 +54,16 @@ contract HealthReportContract {
     prescriptions[numReports] = _prescriptions;
     symptoms[numReports] = _symptoms;
   }
+
+  function grantHealthReportAccess (address doctorAddress) public returns(bool) {
+    
+    // require (msg.sender == ownerContractAddress, "Only owner of health report can grant access");
+    isAuthorized[doctorAddress] = true;
+    return true;
+  }
+
+  function revokeHealthReportAccess (address doctorAddress) public {
+    // require (msg.sender == ownerContractAddress, "Only owner of health report can revoke access");
+    delete isAuthorized[doctorAddress];
+  }
 }
