@@ -1,0 +1,38 @@
+.wrapper {
+    width: 100%;
+}
+#mySidenav{
+    width: 18%;
+    float: left;
+}
+
+#doctorDivL {
+    width: 70%;
+    float: right;
+    font-size: 25px;
+    height: 150px;
+}
+#mynamediv {
+    width: 70%;
+    float: right;
+}
+#getAppointmentForDoctor {
+    font-size: 25px;
+    color: black;
+    font-family: "Comic Sans MS",cursive,sans-serif;
+    float: right;
+    width: 40%;
+    margin-right:40px;
+}
+#doctorL {
+    font-size: 23px;
+
+}
+
+
+.appointL {
+    width: 70%;
+    float: right;
+    height: 30px;
+}
+

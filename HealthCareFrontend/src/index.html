@@ -7,62 +7,43 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Register</title>
  <link rel="stylesheet" href="css/navbar.css">
- <link rel="stylesheet" href="css/verticaltab.css">
- <link rel="stylesheet" href="css/layout.css">
- <link rel="stylesheet" href="css/search.css">
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-<script src="js/search.js"></script>
+    <link href="css/index.css" rel="stylesheet">
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <script>
-      
-function openNav() {
-  document.getElementById("mySidenav").style.width = "250px";
-}
-
-function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";
-}
-    </script>
 
   </head>
   <body>
 
+
+      <div class="wrapper"> 
       <div id="mySidenav" class="sidenav">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+ <ul class="list-unstyled components">
         <a href="/">Home</a>
         <a href="/report.html">Check My Reports</a>
         <a href="/updateprofile.html" class="button"> Update Your Profile</a>
+</ul>
       </div>
-      <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Menu</span>
-      <span class="button" id="getAppointmentForDoctor">Check all my appointment</span>
+    <div id=mynamediv> 
+        <h1 id="myname" class="text-center"></h1>
+    </div>
+    <div id=appointL class=appointL> 
+      <button class="button" id="getAppointmentForDoctor">Check all my appointment</button>
+      </div>
+    <div id=doctorDivL> 
       <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names..">
 
       <ul id="doctorL">
       </ul>
-      <h2>Search Your Doctor</h2>
-                                                                                                                                                                                                      
-        <p>Start typing:</p>
+      </div>
 
-        <!--Make sure the form has the autocomplete function switched off:-->
-        <form autocomplete="off" action="/action_page.php">
-              <div class="autocomplete" style="width:300px;">
-                      <input id="myInput" type="text" name="myCountry" placeholder="Doctor">
-                        </div>
-                          <input type="submit">
-        </form>
-
-        <script>
-
-autocomplete(document.getElementById("myInput"), countries);
-        </script>
-
- <h2 id="myname" class="text-center"></h2>
+      </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
