@@ -4,7 +4,8 @@ var PersonInterface = artifacts.require("./PersonInterface.sol");
 
 module.exports = function(deployer) {
      deployer.deploy(HealthReportInterface).then(function() {   
-       return deployer.deploy(PersonInterface).then(function() {
+         return deployer.deploy(PersonInterface).then(function(instance) {
+             instance.initializeHealthReportFactoryAddress(HealthReportInterface.address);
              return deployer.deploy(AppInterface, PersonInterface.address);
          });
      });
