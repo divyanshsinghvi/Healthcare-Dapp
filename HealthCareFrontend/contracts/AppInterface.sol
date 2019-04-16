@@ -26,7 +26,8 @@ contract Person {
 
   function completeAppointment (string memory requestId, bool _isDoctor) public returns(uint);
 
-  function getAppointmentsData () public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory);
+  // function getAppointmentsData () public view returns (uint arrLength, byte[36][] memory, uint[] memory, uint[] memory, uint[] memory);
+  function getAppointmentsData () public view returns (uint arrLength, byte[36][15] memory, uint[15] memory, uint[15] memory, uint[15] memory);
 
   function printArray() public;
 

@@ -196,14 +196,14 @@ contract PersonContract {
 
   }
 
-  function getAppointmentsData () public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory) {
+  function getAppointmentsData () public view returns (uint arrLength, byte[36][15] memory requestIdArray, uint[15] memory slotNo, uint[15] memory patientIdArray, uint[15] memory doctorIdArray) {
 
     require (msg.sender == myAddr, "Only the person can see their appointment data");
     
-    uint[] memory slotNo = new uint[](activeAppointmentIds.length);
-    uint[] memory patientIdArray = new uint[](activeAppointmentIds.length);
-    uint[] memory doctorIdArray = new uint[](activeAppointmentIds.length);
-    byte[36][] memory requestIdArray = new byte[36][](activeAppointmentIds.length);
+    // uint[] memory slotNo = new uint[](activeAppointmentIds.length);
+    // uint[] memory patientIdArray = new uint[](activeAppointmentIds.length);
+    // uint[] memory doctorIdArray = new uint[](activeAppointmentIds.length);
+    // byte[36][] memory requestIdArray = new byte[36][](activeAppointmentIds.length);
     bytes memory requestIdByte;
     for(uint i=0; i<activeAppointmentIds.length; i++) {
       requestIdByte = bytes(activeAppointmentIds[i]);
@@ -214,7 +214,7 @@ contract PersonContract {
       patientIdArray[i] = currentAppointments[activeAppointmentIds[i]].patientId;
       doctorIdArray[i] = currentAppointments[activeAppointmentIds[i]].doctorId;
     }
-    return (requestIdArray, slotNo, patientIdArray, doctorIdArray);
+    return (activeAppointmentIds.length, requestIdArray, slotNo, patientIdArray, doctorIdArray);
   }
 
 
