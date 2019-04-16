@@ -1,5 +1,13 @@
 var AppInterface = artifacts.require("./AppInterface.sol");
+var HealthReportInterface = artifacts.require("./HealthReportInterface.sol");
+var PersonInterface = artifacts.require("./PersonInterface.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(AppInterface);
+     deployer.deploy(HealthReportInterface).then(function() {
+          deployer.deploy(PersonInterface).then(function() {
+             return deployer.deploy(AppInterface, PersonInterface.address);
+         });
+     });
+    
+    // deployer.deploy(HealthContractInterface);
 };
