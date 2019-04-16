@@ -95,7 +95,7 @@ contract PersonContract {
 
   function getName () public view returns(string memory) {
 
-    require (msg.sender == myAddr || msg.sender == appInterfaceAddress, "Function can be called by myself or app interface");
+    // require (msg.sender == myAddr || msg.sender == appInterfaceAddress, "Function can be called by myself or app interface");
     
     return name;
   }
