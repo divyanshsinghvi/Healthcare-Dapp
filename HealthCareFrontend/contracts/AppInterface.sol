@@ -8,23 +8,13 @@ contract PersonInt {
 }
 
 contract Person {
-  function getLatestReport () public view returns(string memory, string memory, string memory);
-
-  function getReportByID (uint reportID) public view returns(string memory, string memory, string memory);
-
-  function getNumReports () public view returns(uint);
-
   function getName () public view returns(string memory);
 
   function getUID () public view returns(uint);
 
   function getMyAddress () public view returns(address);
 
-  function updateReportWithUID (uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public;
-
   function getHealthReport () public view returns(address);
-
-  function createNewHealthReport (string memory _vitals, string memory _prescriptions, string memory _symptoms) public;
 
   function setName (string memory _name) public;
 

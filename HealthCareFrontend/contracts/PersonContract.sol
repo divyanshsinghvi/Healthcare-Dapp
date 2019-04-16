@@ -51,7 +51,7 @@ contract PersonContract {
   // Data members required for a Doctor
   bool public isDoctor = false;
 
-  event healthReportAddress(address _addr, uint uid);
+  /* event healthReportAddress(address _addr, uint uid); */
 
   constructor (address _addr, uint _uid, bool _isDoctor, address _healthReportFactoryAddress, address _appInterfaceAddress) public {
     myAddr = _addr;
@@ -62,7 +62,7 @@ contract PersonContract {
     myHealthReport = HealthReport(_healthAddr);
     appInterfaceAddress = _appInterfaceAddress;
 
-    emit healthReportAddress(_healthAddr, _uid);
+    /* emit healthReportAddress(_healthAddr, _uid); */
   }
 
   // function getLatestReport () public view returns(string memory, string memory, string memory) {
@@ -95,7 +95,7 @@ contract PersonContract {
 
   function getName () public view returns(string memory) {
 
-    require (msg.sender == myAddr || msg.sender == appInterfaceAddress, "Function can be called by myself or app interface");
+    // require (msg.sender == myAddr || msg.sender == appInterfaceAddress, "Function can be called by myself or app interface");
     
     return name;
   }
@@ -184,6 +184,7 @@ contract PersonContract {
     uint personId = 0;
     activeAppointmentIds[delId] = activeAppointmentIds[activeAppointmentIds.length -1];
     delete activeAppointmentIds[activeAppointmentIds.length - 1];
+    activeAppointmentIds.length--;
 
     if(_isDoctor) {
       isSlotBooked[currentAppointments[requestId].slotno] = false;
