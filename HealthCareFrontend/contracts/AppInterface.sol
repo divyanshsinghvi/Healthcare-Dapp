@@ -166,6 +166,8 @@ contract AppInterface {
 
     address healthReportAddress = person[personToUID[msg.sender]].grantHealthReportAccess(person[doctorUid].getMyAddress());
 
+    require (healthReportAddress != 0x00, "Could not obtain the health report address for requested appointment");
+
     bool success = person[doctorUid].addHealthReportToAccessList(healthReportAddress, personToUID[msg.sender]);
     // requestId++;
     // activeAppointmentRequests[personToUID[msg.sender]] = requestId;

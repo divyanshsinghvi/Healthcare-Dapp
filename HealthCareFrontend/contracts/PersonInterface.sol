@@ -15,7 +15,7 @@ contract PersonInterface {
 
   function initializeNewPerson(address _addr, uint _uid, bool _isDoctor) public returns(address) {
     require(healthReportFactoryAddress != address(0x00), "Address for Health Report Factory is not initialized");
-    personInstance[_uid] = new PersonContract(_addr, _uid, _isDoctor, healthReportFactoryAddress);
+    personInstance[_uid] = new PersonContract(_addr, _uid, _isDoctor, healthReportFactoryAddress, msg.sender);
     return address(personInstance[_uid]);
   }
 }

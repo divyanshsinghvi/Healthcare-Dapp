@@ -53,14 +53,14 @@ contract PersonContract {
 
   event healthReportAddress(address _addr, uint uid);
 
-  constructor (address _addr, uint _uid, bool _isDoctor, address _healthReportFactoryAddress) public {
+  constructor (address _addr, uint _uid, bool _isDoctor, address _healthReportFactoryAddress, address _appInterfaceAddress) public {
     myAddr = _addr;
     myUID = _uid;
     isDoctor = _isDoctor;
     /* myHealthReport = new HealthReport(_addr); */
     address _healthAddr = HealthReportInterface(_healthReportFactoryAddress).initializeNewHealthReport(_addr);
     myHealthReport = HealthReport(_healthAddr);
-    appInterfaceAddress = msg.sender;
+    appInterfaceAddress = _appInterfaceAddress;
 
     emit healthReportAddress(_healthAddr, _uid);
   }
@@ -106,8 +106,7 @@ contract PersonContract {
   }
 
   function getMyAddress () public view returns(address)  {
-
-    // require (msg.sender == appInterfaceAddress, "Only app interface can get a persons address");
+    require (msg.sender == appInterfaceAddress, "Only app interface can get a persons address");
     return myAddr;
   }
 

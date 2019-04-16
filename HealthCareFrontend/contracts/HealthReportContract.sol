@@ -12,9 +12,9 @@ contract HealthReportContract {
 
   mapping (address => bool) isAuthorized;
 
-  constructor (address _owner) public {
+  constructor (address _owner, address _ownerContractAddress) public {
     owner = _owner;
-    ownerContractAddress = msg.sender;
+    ownerContractAddress = _ownerContractAddress;
     numReports = 0;
   }
 
@@ -56,14 +56,13 @@ contract HealthReportContract {
   }
 
   function grantHealthReportAccess (address doctorAddress) public returns(bool) {
-    
-    // require (msg.sender == ownerContractAddress, "Only owner of health report can grant access");
+    require (msg.sender == ownerContractAddress, "Only owner of health report can grant access");
     isAuthorized[doctorAddress] = true;
     return true;
   }
 
   function revokeHealthReportAccess (address doctorAddress) public {
-    // require (msg.sender == ownerContractAddress, "Only owner of health report can revoke access");
+    require (msg.sender == ownerContractAddress, "Only owner of health report can revoke access");
     delete isAuthorized[doctorAddress];
   }
 }

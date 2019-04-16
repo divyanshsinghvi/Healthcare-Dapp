@@ -6,7 +6,7 @@ contract HealthReportInterface {
   HealthReportContract healthReportInstance;
 
   function initializeNewHealthReport(address _addr) public returns(address) {
-    healthReportInstance = new HealthReportContract(_addr);
+    healthReportInstance = new HealthReportContract(_addr, msg.sender);
     return address(healthReportInstance);
   }
 
