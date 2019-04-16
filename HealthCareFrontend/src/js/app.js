@@ -74,6 +74,21 @@ App = {
                    }) 
               })
 
+        $.getJSON("HealthReportContract.json",function(report){
+                        var reportClass = web3.eth.contract(report["abi"]);
+                        var reportInstance = reportClass.at(regarr[2]);
+                        console.log("report instance"+reportInstance);
+                        reportInstance.getNumReports(function(err,num){
+                          if(num >0){
+                        reportInstance.getLatestReport(function(error,report){
+                          if(error){
+                            console.log(error)
+                          }
+                          console.log("yoo"+report);
+                        });}
+                      });
+
+                    })
 
         managerInstance.getListOfDoctors().then(function(docs){  console.log(docs)
             
@@ -166,13 +181,19 @@ $(function() {
                 personInstance.getAppointmentsData(function(err,data){
                     if(!err){
                     for(j=0;j<5;j++){
-                        $("#myappoint").append('<li class="bok">'+bin2String(data[1][j]) + "  "+(parseInt(data[2][j].toString()))+ "  " +(parseInt(data[3][j].toString()))+ "  " + (parseInt(data[4][j].toString()))+"  " + "</li>")
+                        $("#myappoint").append('<li class="bok" data='+bin2String(data[1][j])+'">'+ 'Report : ' + j+ "  "+(parseInt(data[2][j].toString()))+ "  " +(parseInt(data[3][j].toString()))+ "  " + (parseInt(data[4][j].toString()))+"  " + "</li>")
                         //managerInstance.getPatientReportHealthAddress(parseInt(data[3][j]).toString(),function(err,report){})
                         //console.log(report);
-                    
-                    
-                    }
-                
+                        
+
+
+
+                }
+
+
+
+
+                                      
                         //  managerInstance.completeAppointment(bin2String(data[0][0]))
                     console.log(data)
                   }
@@ -190,10 +211,21 @@ $(function() {
 
     }
       else if($(e.target).attr('class') == "bok"){
+          managerInstance.isPersonRegistered().then(function(regarr){
+        $.getJSON("PersonContract.json", function(person) {
+          var personClass = web3.eth.contract(person["abi"]);
+          var personInstance = personClass.at(regarr[1]);
+          console.log("Data for person is "+personInstance);
+          personInstance.getDoctorFlag(function(err,flag){
+          if(flag == true){
 
-          console.log($(e.target).val)
+          console.log(e.target.innerHTML.split(" ")[6])
+          data = e.target.innerHTML.split(" ")[6];
+          reportaddr = managerInstance.getPatientHealthReportAddress(data);
+
+        }
           //manangerInstance.completeAppointment(e.target.val)
-      }
+      })})})}
   }
   $(window).load(function() {
     App.init();
