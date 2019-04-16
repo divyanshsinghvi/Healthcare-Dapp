@@ -221,11 +221,16 @@ $(function() {
 
           console.log(e.target.innerHTML.split(" ")[6])
           data = e.target.innerHTML.split(" ")[6];
-          reportaddr = managerInstance.getPatientHealthReportAddress(data);
-
-        }
+          managerInstance.getPatientHealthReportAddress(data).then(function(reportadr){
+              console.log(reportadr)
+              $.getJSON("HealthReportContract.json",function(report){
+                        var reportClass = web3.eth.contract(report["abi"]);
+                  var reportInstance = reportClass.at(reportadr);
+                  reportInstance.createNewReport("weight:23","crocin","cold",function(err){})
+        })})
           //manangerInstance.completeAppointment(e.target.val)
-      })})})}
+          }}
+          )})})}
   }
   $(window).load(function() {
     App.init();

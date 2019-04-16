@@ -53,10 +53,10 @@ $(document).ready(function() {
       }).then(function(regarr){
           isReg = regarr[0]
           if(isReg === true){
-              $.getJSON("PersonContract.json", function(person) {
+              $.getJSON("HealthReportContract.json", function(person) {
                   console.log(person["abi"])
                   var personClass = web3.eth.contract(person["abi"]);
-                  var personInstance = personClass.at(regarr[1]);
+                  var personInstance = personClass.at(regarr[2]);
                   console.log(personInstance)
                   var reports = new Array();
 
