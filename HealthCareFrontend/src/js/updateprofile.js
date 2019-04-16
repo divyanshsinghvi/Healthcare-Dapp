@@ -54,7 +54,7 @@ $(document).ready(function() {
           isReg = regarr[0]
           if(isReg === true){
               console.log(regarr[1])
-              $.getJSON("Person.json", function(person) {
+              $.getJSON("PersonContract.json", function(person) {
                   console.log(person["abi"])
                   var personClass = web3.eth.contract(person["abi"]);
                   var personInstance = personClass.at(regarr[1]);
