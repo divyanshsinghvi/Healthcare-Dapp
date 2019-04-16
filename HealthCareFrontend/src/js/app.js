@@ -121,8 +121,8 @@ $(function() {
 }
 
   window.onclick = function (e) {
-    console.log("requestAppointment");
     if (e.target.localName == 'a') {
+        console.log("requestAppointment");
         console.log($(e.target.parentNode).find("span").html())
         doctoraddress = $(e.target.parentNode).find("span").html()
         $.getJSON("Person.json", function(person) {
@@ -142,9 +142,6 @@ $(function() {
                 console.log(error);
               }
             })
-            
-
-
         })
          
 
@@ -162,9 +159,11 @@ $(function() {
               console.log("Am I a doctor ??" + flag)
               if(flag===true){
                 personInstance.getAppointmentsData(function(err,data){
-                  if(!err){
-                    console.log(bin2String(data[0][18]))
-                    managerInstance.completeAppointment(bin2String(data[0][6]))
+                    if(!err){
+                    for(j=0;j<data[0].length;j++){
+                        console.log(bin2String(data[0][j]))
+                    }
+                    managerInstance.completeAppointment(bin2String(data[0][0]))
                     console.log(data)
                   }
                   else
