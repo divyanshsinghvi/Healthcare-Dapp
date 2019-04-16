@@ -65,6 +65,9 @@ App = {
                   console.log(personInstance)
                   //import("search.js").then(function)
                   //countries=[personInstance]
+          personInstance.getDoctorFlag(function(err,flag){
+              if(flag == false){$('#myfault').hide()}
+          })
                   personInstance.getName(function(error, myname){
                     if(!error){
                         $("#myname").html( myname);
@@ -226,6 +229,7 @@ $(function() {
               $.getJSON("HealthReportContract.json",function(report){
                         var reportClass = web3.eth.contract(report["abi"]);
                   var reportInstance = reportClass.at(reportadr);
+                  console.log($("#input1").val(),$("#input2").val(),$("#input3").val())
                   reportInstance.createNewReport($("#input1").val(),$("#input2").val(),$("#input3").val(),function(err){})
         })})
           //manangerInstance.completeAppointment(e.target.val)
