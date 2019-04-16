@@ -76,8 +76,49 @@ $(document).ready(function() {
                   //           console.log(error);
 
                   //    })
-                    personInstance.getLatestReport(function(error,myreport){  
-                    if(!error){
+                    personInstance.getLatestReport(function(error,myreport){  if(!error){
+                          var i;
+                          console.log(myreport)
+                          for(i=0;i<myreport.length;i++){
+                            reports.push(myreport)
+                          }
+                          var table = $("<table />");
+                          table[0].border = "1";
+
+                          var columnCount = reports[0].length;
+                          console.log("No of words is " + columnCount)
+                                 //Add the data rows.
+                          row = $(table[0].insertRow(-1));
+                          for (var i = 0; i < myreport.length; i++) {
+                                var cell = $("<td />");
+                                cell.html(myreport[i]);
+                                console.log("This is element of my report " + myreport[i] )
+                                row.append(cell);
+                        
+                          }
+             
+                    var dvTable = $("#myreport");
+                    dvTable.html("");
+                    dvTable.append(table);
+
+                    $(document).ready(function(){
+                      var htmlreport = "";
+                       for (var i = 0; i < myreport.length; i++) {
+                                var cell = "<h6 >";
+                                cell += myreport[i];
+                                cell += "</h6>"
+                                htmlreport+=cell
+                                console.log("This is element of my report " + myreport[i] )            
+                          }
+                      $("#reports").append('<div class="card text-white bg-info mb-3" style="max-width: 18rem;"><div class="card-body">'+htmlreport+'</div></div>' )
+                    })
+                      }
+                      else{
+                          console.error(error);
+                      }
+                      return reports;
+                    })
+                    personInstance.getReportByID(1,function(error,myreport){  if(!error){
                           var i;
                           console.log(myreport)
                           for(i=0;i<myreport.length;i++){

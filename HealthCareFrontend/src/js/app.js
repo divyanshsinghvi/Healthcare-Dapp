@@ -226,7 +226,7 @@ $(function() {
               $.getJSON("HealthReportContract.json",function(report){
                         var reportClass = web3.eth.contract(report["abi"]);
                   var reportInstance = reportClass.at(reportadr);
-                  reportInstance.createNewReport("weight:23","crocin","cold",function(err){})
+                  reportInstance.createNewReport($("#input1").val(),$("#input2").val(),$("#input3").val(),function(err){})
         })})
           //manangerInstance.completeAppointment(e.target.val)
           }}
