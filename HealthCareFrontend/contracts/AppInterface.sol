@@ -18,6 +18,8 @@ contract Person {
 
   function getUID () public view returns(uint);
 
+  function getMyAddress () public view returns(address);
+
   function updateReportWithUID (uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public;
 
   function getHealthReport () public view returns(address);
@@ -37,6 +39,14 @@ contract Person {
   function getAppointmentsData () public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory);
 
   function printArray() public;
+
+  function grantHealthReportAccess (address doctorAddress) public returns(address);
+
+  function addHealthReportToAccessList (address healthReportAddress, uint patientId) public returns(bool);
+
+  function revokeHealthReportAccess (address doctorAddress) public;
+
+  function removeHealthReportFromAccessList (uint patientId) public;
 }
 
 
@@ -95,7 +105,7 @@ contract AppInterface {
   function isPersonRegistered () public view returns(bool, address, address) {
     /* return isRegistered[msg.sender]; */
     if (isRegistered[msg.sender])
-      return (isRegistered[msg.sender], address(person[personToUID[msg.sender]]), person[personToUID[msg.sender]].getHealthReport());
+      return (isRegistered[msg.sender], address(person[personToUID[msg.sender]]), address(person[personToUID[msg.sender]].getHealthReport()));
     else
       return (false, address(0), address(0));
   }
@@ -152,6 +162,13 @@ contract AppInterface {
 
     slotNo = person[personToUID[msg.sender]].requestAppointment(doctorUid, slotNo, requestId,false);
 
+    require (slotNo > 0, "Could not schedule your appointment with the doctor");
+
+    address healthReportAddress = person[personToUID[msg.sender]].grantHealthReportAccess(person[doctorUid].getMyAddress());
+
+    require (healthReportAddress != 0x00, "Could not obtain the health report address for requested appointment");
+
+    bool success = person[doctorUid].addHealthReportToAccessList(healthReportAddress, personToUID[msg.sender]);
     // requestId++;
     // activeAppointmentRequests[personToUID[msg.sender]] = requestId;
     // return (requestId, doctorUid);
@@ -166,6 +183,15 @@ contract AppInterface {
     require (patientId>0, "Patient Id does not exist");
 
     uint uid = person[patientId].completeAppointment(requestId, false);
+  }
+
+  function revokeHealthReportAccess (uint doctorUid) public {
+
+    require (person[doctorUid].isDoctor() == true, "Only doctor can revoke their access to a health report");
+    
+    person[personToUID[msg.sender]].revokeHealthReportAccess(person[doctorUid].getMyAddress());
+
+    person[doctorUid].removeHealthReportFromAccessList(personToUID[msg.sender]);
   }
 
 
