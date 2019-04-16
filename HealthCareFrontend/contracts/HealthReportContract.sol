@@ -27,17 +27,22 @@ contract HealthReportContract {
   function getLatestReport () public view returns(string memory, string memory, string memory) {
     require(numReports > 0, "There are no health records for the person yet");
 
+    require (isAuthorized[msg.sender] || msg.sender == owner, "Only the health report owner and authorized people can access.");
+
     return (vitals[numReports], prescriptions[numReports], symptoms[numReports]);
   }
 
   function getReportByID (uint reportID) public view returns(string memory, string memory, string memory) {
     require(reportID>=1 && reportID<=numReports, "The report with the given Report ID does not exist.");
 
+    require (isAuthorized[msg.sender] || msg.sender == owner, "Only the health report owner and authorized people can access.");
+
     return (vitals[reportID], prescriptions[reportID], symptoms[reportID]);
   }
 
   function updateReportWithUID(uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
     require(reportID>=1 && reportID<=numReports, "The report with the given Report ID does not exist.");
+    require (isAuthorized[msg.sender], "Only authorized people can update a report for a patient");
 
     vitals[reportID] = _vitals;
     prescriptions[reportID] = _prescriptions;
@@ -49,6 +54,9 @@ contract HealthReportContract {
   }
 
   function createNewReport(string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
+
+    require (isAuthorized[msg.sender], "Only authorized people can create a report for a patient");
+    
     numReports++;
     vitals[numReports] = _vitals;
     prescriptions[numReports] = _prescriptions;

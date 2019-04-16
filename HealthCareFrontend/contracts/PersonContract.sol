@@ -2,7 +2,7 @@ pragma solidity >=0.5.0 <0.6.0;
 
 
 // Interface contract for HealthReport
-contract HealthReportInterface {
+contract HealthReportInt {
   function initializeNewHealthReport(address _addr) public returns(address);
 }
 
@@ -58,14 +58,14 @@ contract PersonContract {
     myUID = _uid;
     isDoctor = _isDoctor;
     /* myHealthReport = new HealthReport(_addr); */
-    address _healthAddr = HealthReportInterface(_healthReportFactoryAddress).initializeNewHealthReport(_addr);
+    address _healthAddr = HealthReportInt(_healthReportFactoryAddress).initializeNewHealthReport(_addr);
     myHealthReport = HealthReport(_healthAddr);
     appInterfaceAddress = _appInterfaceAddress;
 
     emit healthReportAddress(_healthAddr, _uid);
   }
 
-  function getLatestReport () public view returns(string memory, string memory, string memory) {
+  // function getLatestReport () public view returns(string memory, string memory, string memory) {
     /* Report memory latestReport = myReports[numReports]; */
     /* uint i; */
     /* vitals = ""; */
@@ -82,22 +82,27 @@ contract PersonContract {
 
     /* return (vitals, prescriptions, myReports[numReports].symptoms); */
     /* return (myReports[numReports].vitals, myReports[numReports].prescriptions, myReports[numReports].symptoms); */
-    return myHealthReport.getLatestReport();
-  }
+  //   return myHealthReport.getLatestReport();
+  // }
 
-  function getReportByID (uint reportID) public view returns(string memory, string memory, string memory) {
-    return myHealthReport.getReportByID(reportID);
-  }
+  // function getReportByID (uint reportID) public view returns(string memory, string memory, string memory) {
+  //   return myHealthReport.getReportByID(reportID);
+  // }
 
-  function getNumReports () public view returns(uint) {
-    return myHealthReport.getNumReports();
-  }
+  // function getNumReports () public view returns(uint) {
+  //   return myHealthReport.getNumReports();
+  // }
 
   function getName () public view returns(string memory) {
+
+    require (msg.sender == myAddr || msg.sender == appInterfaceAddress, "Function can be called by myself or app interface");
+    
     return name;
   }
 
   function getUID () public view returns(uint) {
+    require (msg.sender == myAddr || msg.sender == appInterfaceAddress, "Function can be called by myself or app interface");
+
     return myUID;
   }
 
@@ -110,28 +115,34 @@ contract PersonContract {
     return myAddr;
   }
 
-  function updateReportWithUID (uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
-    myHealthReport.updateReportWithUID(reportID, _vitals, _prescriptions, _symptoms);
-  }
+  // function updateReportWithUID (uint reportID, string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
+  //   myHealthReport.updateReportWithUID(reportID, _vitals, _prescriptions, _symptoms);
+  // }
 
   function getHealthReport () public view returns(HealthReport) {
+    require (msg.sender == appInterfaceAddress, "Only app interface can get the Health Report contract");
     return myHealthReport;
   }
 
-  function createNewReport (string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
-    myHealthReport.createNewReport(_vitals, _prescriptions, _symptoms);
-  }
+  // function createNewReport (string memory _vitals, string memory _prescriptions, string memory _symptoms) public {
+  //   myHealthReport.createNewReport(_vitals, _prescriptions, _symptoms);
+  // }
 
   function setName (string memory _name) public {
+
+    require (msg.sender == myAddr, "Only person can set their name");
+    
     name = _name;
   }
 
   function setDoctorFlag (bool _isDoctor) public {
+    require (msg.sender == appInterfaceAddress, "Only app interface can set the isDoctor flag");
     isDoctor = _isDoctor;
   }
 
 
   function requestAppointment (uint uid, uint dayAfter, string memory requestId, bool _isDoctor) public returns(uint){
+    require (msg.sender == appInterfaceAddress, "Only app interface can call request for appointment");
 
     activeAppointmentIds.push(requestId);
     if(_isDoctor) {
@@ -156,8 +167,9 @@ contract PersonContract {
   }
 
   function completeAppointment (string memory requestId, bool _isDoctor) public returns(uint) {
-
+    require (msg.sender == appInterfaceAddress, "Only app interface can complete the appointment");
     require (currentAppointments[requestId].patientId != 0x00, "The appointment corresponding to the request id does not exist");
+
     uint delId = activeAppointmentIds.length;
     bytes32 requestIdHash = keccak256(abi.encodePacked(requestId));
     for(uint i=0; i<activeAppointmentIds.length; i++) {
@@ -184,6 +196,9 @@ contract PersonContract {
   }
 
   function getAppointmentsData () public view returns (byte[36][] memory, uint[] memory, uint[] memory, uint[] memory) {
+
+    require (msg.sender == myAddr, "Only the person can see their appointment data");
+    
     uint[] memory slotNo = new uint[](activeAppointmentIds.length);
     uint[] memory patientIdArray = new uint[](activeAppointmentIds.length);
     uint[] memory doctorIdArray = new uint[](activeAppointmentIds.length);
@@ -211,6 +226,9 @@ contract PersonContract {
 
 
   function grantHealthReportAccess (address doctorAddress) public returns(address)  {
+
+    require (msg.sender == appInterfaceAddress, "Grant of access can be called only by app interface");
+    
     bool success = myHealthReport.grantHealthReportAccess(doctorAddress);
     if(success)
       return address(myHealthReport);
@@ -219,19 +237,23 @@ contract PersonContract {
   }
 
   function addHealthReportToAccessList (address healthReportAddress, uint patientId) public returns(bool) {
-    
+    require (msg.sender == appInterfaceAddress, "adding health report to access list can be called only by app interface");
     require (isDoctor==true, "Only doctors can add health report to their access list");
+
     patientReportMapping[patientId] = healthReportAddress;
     return true;
     
   }
 
   function revokeHealthReportAccess (address doctorAddress) public {
+    require (msg.sender == appInterfaceAddress, "revoking health report access can be called only by app interface");
     myHealthReport.revokeHealthReportAccess(doctorAddress);
   }
 
   function removeHealthReportFromAccessList (uint patientId) public {
+    require (msg.sender == appInterfaceAddress, "removing health report from access list can be called only by app interface");
     require (isDoctor==true, "Only doctors can remove health report from their access list");
+
     delete patientReportMapping[patientId];
   }
 

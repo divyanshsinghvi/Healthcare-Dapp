@@ -1,7 +1,7 @@
 pragma solidity >=0.5.0 <0.6.0;
 
 // Interface contract for Person
-contract PersonInterface {
+contract PersonInt {
   function initializeHealthReportFactoryAddress (address _healthReportFactoryAddress) public;
 
   function initializeNewPerson(address _addr, uint _uid, bool _isDoctor) public returns(address);
@@ -64,7 +64,7 @@ contract AppInterface {
   uint numPersons = 0;
   uint numDoctors = 0;
 
-  PersonInterface personFactory;
+  PersonInt personFactory;
 
 
   // An event which can be fired whenever a new person registers
@@ -73,7 +73,7 @@ contract AppInterface {
 
   constructor (address _personFactoryAddress) public {
     admin = msg.sender;
-    personFactory = PersonInterface(_personFactoryAddress);
+    personFactory = PersonInt(_personFactoryAddress);
   }
 
   modifier onlyAdmin {
@@ -166,7 +166,7 @@ contract AppInterface {
 
     address healthReportAddress = person[personToUID[msg.sender]].grantHealthReportAccess(person[doctorUid].getMyAddress());
 
-    require (healthReportAddress != 0x00, "Could not obtain the health report address for requested appointment");
+    require (healthReportAddress != address(0x00), "Could not obtain the health report address for requested appointment");
 
     bool success = person[doctorUid].addHealthReportToAccessList(healthReportAddress, personToUID[msg.sender]);
     // requestId++;
